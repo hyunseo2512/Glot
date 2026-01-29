@@ -1,0 +1,130 @@
+{
+  "name": "gluon",
+  "version": "0.1.0",
+  "description": "AI-powered IDE integrated with Quark backend",
+  "main": "dist/main/main.js",
+  "author": "zxcvne",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:main\" \"npm run dev:renderer\"",
+    "dev:main": "tsc -p tsconfig.main.json && electron . --no-sandbox --ignore-certificate-errors --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime",
+    "dev:renderer": "vite",
+    "build": "npm run build:main && npm run build:renderer",
+    "build:main": "tsc -p tsconfig.main.json",
+    "build:renderer": "vite build",
+    "start": "electron .",
+    "package": "npm run build && electron-builder",
+    "lint": "eslint src --ext .ts,.tsx",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
+  },
+  "dependencies": {
+    "@monaco-editor/react": "^4.6.0",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/ssh2": "^1.15.5",
+    "@xterm/addon-clipboard": "^0.2.0",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/addon-webgl": "^0.19.0",
+    "@xterm/xterm": "^6.0.0",
+    "axios": "^1.6.7",
+    "chokidar": "^4.0.3",
+    "dompurify": "^3.3.2",
+    "electron-store": "^8.2.0",
+    "emmet-monaco-es": "^5.6.1",
+    "lucide-react": "^0.563.0",
+    "node-pty": "^1.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.5.0",
+    "react-markdown": "^10.1.0",
+    "react-syntax-highlighter": "^16.1.0",
+    "remark-gfm": "^4.0.1",
+    "simple-git": "^3.30.0",
+    "simple-icons": "^16.6.1",
+    "ssh2": "^1.17.0",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0",
+    "zustand": "^5.0.10"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.16",
+    "@types/react": "^18.2.52",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.24",
+    "concurrently": "^8.2.2",
+    "electron": "^28.3.3",
+    "electron-builder": "^24.9.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.33.2",
+    "postcss": "^8.5.6",
+    "prettier": "^3.2.4",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.3.3",
+    "vite": "~5.4.11",
+    "vite-plugin-monaco-editor": "^1.1.0"
+  },
+  "build": {
+    "appId": "com.quark.gluon",
+    "productName": "Gluon",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "artifactName": "${productName}.${ext}",
+    "files": [
+      "dist/**/*",
+      "public/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/python",
+        "to": "python"
+      }
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "pacman",
+        "rpm"
+      ],
+      "executableArgs": [
+        "--ozone-platform-hint=auto",
+        "--enable-features=WaylandWindowDecorations",
+        "--enable-wayland-ime"
+      ],
+      "maintainer": "zxcvne <zxcvne@localhost>",
+      "category": "Development",
+      "icon": "public/icons/gluon-512.svg",
+      "mimeTypes": [
+        "x-scheme-handler/gluon"
+      ],
+      "desktop": {
+        "Icon": "gluon",
+        "Name": "Gluon",
+        "StartupWMClass": "Gluon"
+      }
+    },
+    "deb": {
+      "afterInstall": "build/after-install.sh"
+    },
+    "pacman": {
+      "afterInstall": "build/after-install.sh"
+    },
+    "rpm": {
+      "afterInstall": "build/after-install.sh"
+    },
+    "protocols": [
+      {
+        "name": "Gluon Protocol",
+        "schemes": [
+          "gluon"
+        ]
+      }
+    ]
+  }
+}

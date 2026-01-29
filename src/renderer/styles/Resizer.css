@@ -1,0 +1,29 @@
+/* 리사이저 */
+.resizer {
+  background-color: transparent;
+  position: relative;
+  z-index: 10;
+  transition: background-color 0.2s;
+}
+
+.resizer:hover {
+  background-color: var(--accent-blue);
+}
+
+.resizer:active {
+  background-color: var(--accent-purple);
+}
+
+/* 가로 리사이저 (세로 방향 크기 조절) */
+.resizer-horizontal {
+  width: 4px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+/* 세로 리사이저 (가로 방향 크기 조절) */
+.resizer-vertical {
+  width: 100%;
+  height: 4px;
+  cursor: row-resize;
+}

@@ -1,0 +1,889 @@
+/* AI 에이전트 패널 (오른쪽) */
+.ai-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--bg-secondary);
+  position: relative;
+  /* For Overlay */
+}
+
+/* 아이콘 회전 애니메이션 */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hello greeting shimmer animation */
+@keyframes greeting-shimmer {
+  0% {
+    background-position: 0% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.hello-greeting {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 0.5px;
+  color: #E0E0E0;
+}
+
+.hello-greeting.root-anim {
+  background: linear-gradient(90deg,
+      #ffffff 0%,
+      #BB86FC 25%,
+      #00BFFF 50%,
+      #BB86FC 75%,
+      #ffffff 100%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: greeting-shimmer 3s linear infinite;
+}
+
+/* AI 패널 헤더 */
+.ai-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--bg-secondary);
+  position: relative;
+  z-index: 10;
+}
+
+.ai-panel-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  max-width: 60%;
+}
+
+.ai-icon {
+  font-size: 18px;
+}
+
+.ai-panel-title h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* 버튼 사이 간격 */
+}
+
+.icon-button {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.icon-button:hover:not(:disabled) {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.icon-button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.close-button {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 16px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: none;
+  z-index: 10;
+}
+
+.close-button:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* 모델 선택 컨트롤 */
+.ai-panel-controls {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.model-select-compact {
+  width: 100%;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.model-select-compact:hover {
+  border-color: var(--accent-blue);
+}
+
+/* 메시지 영역 */
+.ai-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* 빈 상태 */
+.ai-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.ai-empty-state p {
+  margin: var(--spacing-xs) 0;
+  font-size: 13px;
+}
+
+.ai-empty-state .hint {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* AI 메시지 */
+.ai-message {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ai-message-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.ai-message-role {
+  font-size: 16px;
+}
+
+.ai-message-content {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+}
+
+.ai-message-user .ai-message-content {
+  background-color: rgba(20, 30, 48, 0.85);
+  color: #e0e0e0;
+  margin-left: var(--spacing-lg);
+  border: 1px solid rgba(60, 80, 120, 0.35);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  padding: 10px var(--spacing-md);
+  white-space: normal;
+}
+
+.ai-message-user .ai-message-content p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ai-message-assistant .ai-message-content {
+  background-color: var(--bg-tertiary);
+  color: #ffffff !important;
+  margin-right: var(--spacing-lg);
+}
+
+.ai-message-system .ai-message-content {
+  background-color: var(--bg-hover);
+  color: var(--accent-red);
+  border: 1px solid var(--accent-red);
+}
+
+/* 로딩 애니메이션 */
+.ai-message-content.loading {
+  display: flex;
+  gap: 4px;
+  padding: var(--spacing-md);
+}
+
+.loading-dot {
+  animation: blink 1.4s infinite both;
+  font-size: 16px;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+  }
+
+  40% {
+    opacity: 1;
+  }
+}
+
+
+
+/* 입력 영역 */
+.ai-input-area {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  overflow: visible;
+  /* 드롭다운 잘림 방지 강제 */
+}
+
+/* 통합 입력 박스 (Cursor Style) */
+.ai-input-box {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-tertiary);
+  /* 어두운 배경 */
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  /* Cursor는 생각보다 덜 둥금 */
+  padding: 8px 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: visible;
+  /* 자식 드롭다운 잘림 방지 강제 */
+  z-index: 100;
+  /* 드롭다운을 포함항 컨테이너 레벨 상향 */
+}
+
+.ai-input-box:focus-within {
+  /* 포커스 시 테두리 변경 없음 - 과한 하이라이트 제거 */
+  z-index: 101;
+}
+
+/* Floating Dropdown (Portal/Fixed) Style */
+.model-dropdown-menu-floating {
+  position: fixed;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 99999;
+  /* 최상위 보장 */
+  overflow-y: auto;
+  min-width: 220px;
+  /* 너비 확대 */
+  max-height: 300px;
+  /* 높이 여유 줌 */
+  padding: 6px;
+  animation: fadeIn 0.1s ease-out;
+}
+
+/* 텍스트 영역 */
+.ai-input-field {
+  width: 100%;
+  border: none !important;
+  outline: none !important;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: none;
+  min-height: 24px;
+  max-height: 200px;
+  /* 길어지면 스크롤 */
+  padding: 4px 0 12px 0;
+  /* 하단 툴바와 간격 */
+}
+
+/* 하단 툴바 (입력창 내부) */
+.ai-input-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  /* 간격 축소 */
+}
+
+.ai-input-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  /* 간격 축소 */
+  flex: 1;
+  /* 남은 공간 차지 */
+  min-width: 0;
+  /* flexbox 축소 허용 */
+}
+
+.ai-input-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  /* 간격 축소 */
+  flex-shrink: 0;
+  /* 우측 버튼들은 줄어들지 않음 */
+}
+
+
+
+/* 화면이 작아지면 모델명 최대 너비 축소 */
+@media (max-width: 300px) {
+  .ai-model-select span:first-child {
+    max-width: 60px;
+  }
+}
+
+
+/* 모드별 색상 (버튼 텍스트 및 선택된 상태) - 강제 적용 */
+/* 모드별 색상 (버튼 아이콘 및 텍스트) - 강제 적용 */
+.ai-model-select.mode-ask,
+.ai-model-select.mode-ask span,
+.ai-model-select.mode-ask svg {
+  color: var(--accent-purple) !important;
+}
+
+.ai-model-select.mode-debug,
+.ai-model-select.mode-debug span,
+.ai-model-select.mode-debug svg {
+  color: var(--accent-green) !important;
+}
+
+.ai-model-select.mode-agent,
+.ai-model-select.mode-agent span,
+.ai-model-select.mode-agent svg {
+  color: var(--accent-blue) !important;
+}
+
+/* 툴바 버튼 공통 */
+.ai-toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  /* 버튼 크기 유지 */
+}
+
+.ai-toolbar-btn:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.ai-toolbar-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 모델 선택 버튼 (텍스트형) */
+.ai-model-select {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.15s;
+  max-width: 100%;
+  max-width: 120px;
+  /* 기본 최대 너비 */
+}
+
+/* 전송 버튼 (기본 상태 - 활성화) */
+.ai-send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background-color: var(--accent-blue);
+  /* 명시적 배경색 */
+  color: white;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.ai-send-btn:hover:not(:disabled) {
+  background-color: var(--accent-blue-hover);
+}
+
+/* 전송 버튼 Disabled 상태 */
+.ai-send-btn:disabled {
+  background-color: rgba(255, 255, 255, 0.05);
+  /* 투명도 있는 배경 */
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+/* ... (중략) ... */
+
+/* 드롭다운 아이템 공통 */
+.model-dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  /* 패딩 확대 */
+  font-size: 13px;
+  /* 폰트 살짝 키움 */
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+  /* 아이템 간 간격 */
+}
+
+/* 기본 파란색 (VS Code 스타일) 적용 */
+.model-dropdown-item.selected {
+  color: var(--text-primary);
+  background-color: transparent;
+  /* 선택되어 있어도 배경색 없음 (사용자 요청) */
+  font-weight: 600;
+}
+
+/* 체크 아이콘을 위한 공간 (선택 시 표시 등 확장 가능성 고려) */
+.model-dropdown-item.selected::after {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  /* 점 크기 확대 */
+  border-radius: 50%;
+  background-color: var(--accent-blue);
+  /* 점 색상 파란색 */
+  margin-left: auto;
+}
+
+/* 호버 시에만 배경색 적용 */
+/* Wave Loading Animation */
+.ai-thinking-wave {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  min-height: 40px;
+  background-color: transparent !important;
+  /* Ensure it blends or use specific bg */
+  border: none;
+}
+
+.wave-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--text-secondary);
+  border-radius: 50%;
+  animation: wave 1.2s infinite ease-in-out;
+}
+
+.wave-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.wave-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.loading-timer {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  min-width: 28px;
+}
+
+@keyframes wave {
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* User Message Resend Button */
+.resend-button {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.ai-message-content:hover .resend-button {
+  opacity: 1;
+}
+
+.resend-button:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.ai-message-content.group {
+  position: relative;
+  padding-right: 24px;
+  /* Space for button */
+}
+
+/* =========================================
+   Markdown Styles (State of the Art Look)
+   ========================================= */
+
+/* Typography Defaults in Message */
+.ai-message-content h3 {
+  font-size: 16px;
+  margin: 12px 0 8px 0;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ai-message-content h4 {
+  font-size: 14px;
+  margin: 10px 0 6px 0;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ai-message-content h5 {
+  font-size: 13px;
+  margin: 8px 0 4px 0;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-message-content strong {
+  color: #569cd6;
+  /* VS Code Blue for Emphasis */
+  font-weight: 600;
+}
+
+/* Code Blocks */
+.code-block-container {
+  margin: 8px 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background-color: #1e1e1e;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 12px;
+  background-color: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.code-block-actions {
+  display: flex;
+  align-items: center;
+}
+
+.code-language {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.copy-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.run-button {
+  background: none;
+  border: 1px solid #2da44e;
+  /* GitHub Green */
+  color: #2da44e;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 3px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+.run-button:hover {
+  background-color: #2da44e;
+  color: #fff;
+}
+
+.code-block {
+  margin: 0;
+  padding: 12px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #d4d4d4;
+  background-color: #1e1e1e;
+}
+
+/* Syntax Highlighting Colors (Basic Simulation) */
+.language-python {
+  color: #9cdcfe;
+}
+
+.language-javascript {
+  color: #dcdcaa;
+}
+
+.language-typescript {
+  color: #4ec9b0;
+}
+
+.language-html {
+  color: #ce9178;
+}
+
+.language-css {
+  color: #d7ba7d;
+}
+
+.language-bash {
+  color: #b5cea8;
+}
+
+/* Inline Code */
+.inline-code {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9em;
+  color: #ce9178;
+  /* Reddish String color often used for inline items */
+}
+
+/* Lists */
+.list-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+.list-bullet {
+  color: var(--accent-blue);
+  margin-right: 8px;
+  font-size: 1.2em;
+  line-height: 1.2;
+}
+
+/* Paragraph spacing */
+.paragraph {
+  margin-bottom: 6px;
+}
+
+/* Agent Action Special Style */
+.agent-action-line {
+  font-size: 12px;
+  color: #aaa;
+  font-style: italic;
+  margin: 4px 0;
+  padding: 4px 8px;
+  border-left: 2px solid #5B9BD5;
+  background-color: rgba(91, 155, 213, 0.05);
+  border-radius: 0 4px 4px 0;
+}
+
+.agent-action-line strong {
+  color: #5B9BD5;
+  font-style: normal;
+}
+
+/* =====================================
+   History Drawer / Sidebar
+   ===================================== */
+.history-drawer-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: fadeIn 0.1s ease;
+}
+
+.history-drawer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 250px;
+  background-color: #181818;
+  border-right: 1px solid #333;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.5);
+  animation: slideInLeft 0.2s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.history-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #333;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.history-item {
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 2px;
+  transition: background-color 0.1s;
+}
+
+.history-item:hover {
+  background-color: #2a2d2e;
+}
+
+.history-item.active {
+  background-color: #37373d;
+  color: #fff;
+}
+
+.history-title {
+  font-size: 13px;
+  color: #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.history-item:hover .history-title {
+  color: #fff;
+}
+
+.history-date {
+  font-size: 11px;
+  color: #666;
+}

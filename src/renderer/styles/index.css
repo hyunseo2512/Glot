@@ -1,0 +1,217 @@
+/* Fonts */
+@font-face {
+  font-family: 'Fira Code';
+  src: url('/fonts/FiraCode-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fira Code';
+  src: url('/fonts/FiraCode-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* 전역 스타일 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+
+  /* Default Theme (Gluon / Tokyo Night) variables - Fallback for global body styles */
+  --dark-0: #0B0C15;
+  --dark-1: #13151f;
+  --dark-2: #1e2230;
+  --dark-3: #2c3245;
+  --text-bright: #ffffff;
+  --text-normal: #E0E0E0;
+  --text-dim: #7A8999;
+  --accent-blue: #00BFFF;
+  --accent-purple: #BB86FC;
+  --accent-cyan: #00BFFF;
+  --accent-green: #8FB870;
+  --accent-yellow: #D4A85A;
+  --accent-red: #CC5566;
+  --bg-primary: #0B0C15;
+  --bg-secondary: #0F111A;
+  --bg-tertiary: #1A1C29;
+  --bg-hover: rgba(59, 139, 255, 0.15);
+  --text-primary: #E0E0E0;
+  --text-secondary: #A0AABF;
+  --text-tertiary: #546E7A;
+  --border-color: #1A1B26;
+  --shadow: rgba(0, 0, 0, 0.8);
+}
+
+/* 1. Theme: Gluon (Tokyo Night Aesthetics) */
+.theme-gluon {
+  --dark-0: #0B0C15;
+  --dark-1: #13151f;
+  --dark-2: #1e2230;
+  --dark-3: #2c3245;
+
+  --text-bright: #ffffff;
+  --text-normal: #E0E0E0;
+  --text-dim: #7A8999;
+
+  --accent-blue: #00BFFF;
+  --accent-purple: #BB86FC;
+  --accent-cyan: #00BFFF;
+  --accent-green: #8FB870;
+  --accent-yellow: #D4A85A;
+  --accent-red: #CC5566;
+
+  --bg-primary: #0B0C15;
+  --bg-secondary: #0F111A;
+  --bg-tertiary: #1A1C29;
+  --bg-hover: rgba(59, 139, 255, 0.15);
+
+  --text-primary: #E0E0E0;
+  --text-secondary: #A0AABF;
+  --text-tertiary: #546E7A;
+
+  --border-color: #1A1B26;
+  --shadow: rgba(0, 0, 0, 0.8);
+}
+
+/* 2. Theme: Modern Dark (Sleek Monochrome Dark) */
+.theme-modern-dark {
+  --dark-0: #050505;
+  --dark-1: #0A0A0A;
+  --dark-2: #141414;
+  --dark-3: #1A1A1A;
+
+  --text-bright: #ffffff;
+  --text-normal: #EAEAEA;
+  --text-dim: #888888;
+
+  --accent-blue: #2F80ED;
+  --accent-purple: #A259FF;
+  --accent-cyan: #1ABCFE;
+  --accent-green: #0ACF83;
+  --accent-yellow: #F2C94C;
+  --accent-red: #FF4B4B;
+
+  --bg-primary: #050505;
+  --bg-secondary: #0A0A0A;
+  --bg-tertiary: #141414;
+  --bg-hover: rgba(255, 255, 255, 0.08);
+
+  --text-primary: #EAEAEA;
+  --text-secondary: #A0A0A0;
+  --text-tertiary: #666666;
+
+  --border-color: #1E1E1E;
+  --shadow: rgba(0, 0, 0, 0.9);
+}
+
+/* 3. Theme: Modern White (Clean Light Mode) */
+.theme-modern-white {
+  --dark-0: #FFFFFF;
+  --dark-1: #F8F9FA;
+  --dark-2: #F1F3F5;
+  --dark-3: #E9ECEF;
+
+  --text-bright: #000000;
+  --text-normal: #212529;
+  --text-dim: #495057;
+
+  --accent-blue: #0A66C2;
+  --accent-purple: #6F42C1;
+  --accent-cyan: #0DCAF0;
+  --accent-green: #198754;
+  --accent-yellow: #FFC107;
+  --accent-red: #DC3545;
+
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F9FA;
+  --bg-tertiary: #F1F3F5;
+  --bg-hover: rgba(0, 0, 0, 0.05);
+
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-tertiary: #868E96;
+
+  --border-color: #DEE2E6;
+  --shadow: rgba(0, 0, 0, 0.08);
+}
+
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-hover);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* 버튼 공통 스타일 */
+button {
+  font-family: var(--font-family);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 입력 공통 스타일 */
+input,
+textarea,
+select {
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent-blue);
+}

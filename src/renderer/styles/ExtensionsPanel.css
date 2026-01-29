@@ -1,0 +1,188 @@
+.extensions-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--bg-secondary);
+}
+
+/* 헤더 */
+.extensions-header {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.extensions-header h3 {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* 검색 */
+.extensions-search {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.extensions-search input {
+  width: 100%;
+  padding: 6px 12px;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+.extensions-search input:focus {
+  border-color: var(--accent-blue);
+  outline: none;
+}
+
+.extensions-search input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* 확장 목록 */
+.extensions-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-sm);
+}
+
+.extensions-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* 확장 아이템 */
+.extension-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  margin-bottom: var(--spacing-sm);
+  transition: all 0.15s;
+}
+
+.extension-item:hover {
+  border-color: var(--accent-blue);
+  background-color: var(--bg-hover);
+}
+
+.extension-info h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.extension-info p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.extension-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.extension-badge.installed {
+  background-color: rgba(80, 161, 79, 0.2);
+  color: #50a14f;
+}
+
+
+/* 확장 액션 */
+.extension-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.extension-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.extension-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent-blue);
+}
+
+.extension-button {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.extension-button.install {
+  background-color: var(--accent-blue);
+  color: #ffffff;
+}
+
+.extension-button.install:hover {
+  background-color: #006bb3;
+}
+
+.extension-button.uninstall {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.extension-button.uninstall:hover {
+  background-color: var(--accent-red);
+  color: #ffffff;
+  border-color: var(--accent-red);
+}
+
+.extension-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* 스크롤바 */
+.extensions-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.extensions-list::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.extensions-list::-webkit-scrollbar-thumb {
+  background: var(--bg-hover);
+  border-radius: 5px;
+}
+
+.extensions-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}

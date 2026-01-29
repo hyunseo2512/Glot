@@ -1,0 +1,38 @@
+/* VS Code 스타일 액티비티 바 */
+.sidebar {
+  width: 48px;
+  background-color: var(--bg-tertiary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  gap: var(--spacing-xs);
+}
+
+.sidebar-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font-size: 20px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.sidebar-button:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
+}
+
+.sidebar-button.active {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid var(--accent-color);
+}

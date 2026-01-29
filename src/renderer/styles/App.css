@@ -1,0 +1,759 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+/* 헤더 메뉴바 */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  background-color: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  height: 35px;
+  z-index: 10000;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-md) 0 var(--spacing-xs);
+  -webkit-app-region: no-drag;
+}
+
+.header-drag-region {
+  flex: 1;
+  height: 100%;
+  -webkit-app-region: drag;
+  /* 이 영역을 드래그해서 창 이동 */
+}
+
+.app-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  -webkit-app-region: no-drag;
+}
+
+.app-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+.app-title h1 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-blue);
+  margin: 0;
+  display: none;
+  /* Gluon 텍스트 숨김 */
+}
+
+.app-title .subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.app-menu {
+  display: flex;
+  gap: 4px;
+  -webkit-app-region: no-drag;
+}
+
+.menu-dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.menu-item {
+  font-size: 13px;
+  color: var(--text-primary);
+  padding: 6px 10px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  line-height: 1;
+}
+
+.menu-item:hover,
+.menu-item.active {
+  background-color: var(--bg-hover);
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  min-width: 200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.15s;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-hover);
+}
+
+.dropdown-item.disabled {
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.dropdown-item.disabled:hover {
+  background-color: transparent;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 4px 0;
+}
+
+/* 헤더 우측 */
+.header-right {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  -webkit-app-region: no-drag;
+}
+
+.settings-button {
+  width: 35px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+}
+
+.settings-button:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* 창 제어 버튼 */
+.window-controls {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  height: 100%;
+}
+
+.window-button {
+  width: 30px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 0.15s;
+  padding: 0;
+}
+
+.window-button:hover {
+  background-color: var(--bg-hover);
+}
+
+.window-button.minimize {}
+
+.window-button.maximize {}
+
+/* 컨트롤 버튼 */
+.app-controls {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+}
+
+.control-button {
+  width: 32px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.control-button:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.control-button.active {
+  background-color: var(--accent-blue);
+  color: #ffffff;
+}
+
+.control-button.active:hover {
+  background-color: var(--accent-purple);
+}
+
+/* 메인 바디 - VS Code 레이아웃 */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 사이드 패널 */
+.side-panel {
+  min-width: 200px;
+  max-width: 600px;
+  background-color: var(--bg-secondary);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* 에디터 영역 */
+.editor-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 터미널 컨테이너 (하단) */
+.terminal-container {
+  min-height: 100px;
+  /* max-height 제거: 전체화면 지원을 위해 제한 해제 */
+  background-color: var(--bg-primary);
+  flex-shrink: 0;
+}
+
+/* AI 패널 컨테이너 (오른쪽) */
+.ai-panel-container {
+  /* min-width는 JS에서 제어하거나 closed 클래스로 0 처리 */
+  background-color: var(--bg-secondary);
+  flex-shrink: 0;
+  transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  /* 부드러운 감속 효과 */
+  overflow: hidden;
+  /* 애니메이션 중 내용 넘침 방지 */
+  white-space: nowrap;
+  /* 내용 줄바꿈 방지 */
+}
+
+/* 플레이스홀더 */
+.panel-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  font-size: 14px;
+  gap: var(--spacing-md);
+  padding: 20px;
+  text-align: center;
+}
+
+.panel-placeholder button {
+  background-color: var(--accent-blue);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.panel-placeholder button:hover {
+  background-color: #005fb8;
+  transform: translateY(-1px);
+}
+
+/* 푸터 상태바 */
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  background-color: var(--bg-primary);
+  /* 상태바 기본 배경을 조금 더 어둡게 */
+  color: var(--text-bright);
+  font-size: 12px;
+  height: 22px;
+  border-top: 1px solid var(--border-color);
+}
+
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 100%;
+}
+
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  height: 100%;
+  padding-right: var(--spacing-md);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 0 8px;
+}
+
+.status-item.clickable {
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.status-item.clickable:hover {
+  background-color: var(--bg-hover);
+}
+
+.status-label {
+  opacity: 0.9;
+}
+
+.status-value {
+  font-weight: 500;
+}
+
+.status-value.connected {
+  color: var(--accent-green);
+}
+
+/* 원격 창 버튼 */
+.remote-button {
+  background-color: var(--accent-blue);
+  color: white;
+  padding: 0 10px;
+  margin-right: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.remote-button:hover {
+  background-color: var(--accent-hover);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--bg-tertiary);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  min-width: 300px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 8px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+}
+
+.modal-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.modal-btn.cancel {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  margin-right: 10px;
+}
+
+.modal-btn.delete {
+  background-color: #ce2c2c;
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.modal-btn.delete:hover {
+  background-color: #a81b1b;
+}
+
+.modal-btn.primary {
+  background-color: var(--accent-blue);
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.modal-btn.primary:hover {
+  background-color: var(--accent-hover, #005fb8);
+  /* Fallback or define accent-hover explicitly if missing */
+}
+
+/* Zoom Control Styles */
+.zoom-container {
+  position: relative;
+  cursor: pointer;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.15s;
+}
+
+.zoom-container:hover {
+  background-color: var(--bg-hover);
+}
+
+.zoom-menu {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  display: flex;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px;
+  gap: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.zoom-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background-color 0.15s;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.zoom-button:hover {
+  background-color: var(--bg-hover);
+}
+
+.zoom-value-text {
+  font-size: 13px;
+  color: var(--text-primary);
+  padding: 0 4px;
+  user-select: none;
+}
+
+.zoom-divider {
+  width: 1px;
+  height: 16px;
+  background-color: var(--border-color);
+  margin: 0 4px;
+}
+
+.zoom-reset-btn {
+  font-size: 12px;
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.zoom-reset-btn:hover {
+  background-color: var(--bg-hover);
+}
+
+/* 프로필 드롭다운 */
+.profile-icon.root-profile-anim {
+  background: linear-gradient(135deg,
+      #ffffff 0%,
+      #BB86FC 25%,
+      #00BFFF 50%,
+      #BB86FC 75%,
+      #ffffff 100%);
+  background-size: 400% 400%;
+  animation: diagonal-flow 3s linear infinite;
+  box-shadow: 0 0 8px rgba(187, 134, 252, 0.6);
+}
+
+.profile-dropdown-menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  min-width: 150px;
+  padding: 4px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-dropdown-header {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 4px;
+}
+
+.profile-name {
+  font-weight: bold;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.profile-email {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-dropdown-item {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 8px 12px;
+  text-align: left;
+  width: 100%;
+  font-size: 13px;
+  transition: background-color 0.15s;
+}
+
+.profile-dropdown-item:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Custom Tooltip - Disabled */
+.custom-tooltip {
+  display: none !important;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ========== Common Context Menu Styles ========== */
+.context-menu {
+  position: fixed;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 10000;
+  min-width: 160px;
+  padding: 4px 0;
+  animation: contextMenuFadeIn 0.1s ease-out;
+}
+
+@keyframes contextMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.context-menu-item {
+  padding: 6px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.1s;
+}
+
+.context-menu-item:hover {
+  background-color: var(--accent-blue);
+  color: #ffffff;
+}
+
+.context-menu-item.disabled {
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.context-menu-separator {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 4px 0;
+}
+
+/* ========== Monaco Editor Context Menu Override ========== */
+.monaco-menu,
+.shadow-root-host .monaco-menu,
+.context-view .monaco-menu,
+.monaco-editor .context-view .monaco-menu,
+.monaco-editor-overlaymessage,
+.monaco-menu-container {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+.context-view.monaco-menu-container {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 6px !important;
+}
+
+.monaco-menu .monaco-action-bar.vertical,
+.monaco-action-bar.vertical {
+  background-color: transparent !important;
+}
+
+.monaco-menu .action-item,
+.monaco-action-bar .action-item {
+  background-color: transparent !important;
+}
+
+.monaco-menu .action-item .action-label,
+.monaco-action-bar .action-item .action-label {
+  color: var(--text-primary) !important;
+  font-size: 13px !important;
+}
+
+.monaco-menu .action-item:hover,
+.monaco-menu .action-item.focused,
+.monaco-action-bar .action-item:hover,
+.monaco-action-bar .action-item.focused {
+  background-color: var(--accent-blue) !important;
+}
+
+.monaco-menu .action-item:hover .action-label,
+.monaco-menu .action-item.focused .action-label,
+.monaco-action-bar .action-item:hover .action-label,
+.monaco-action-bar .action-item.focused .action-label {
+  color: #ffffff !important;
+}
+
+.monaco-menu .action-item.disabled .action-label,
+.monaco-action-bar .action-item.disabled .action-label {
+  color: var(--text-tertiary) !important;
+}
+
+.monaco-menu .monaco-menu-separator,
+.monaco-action-bar .action-item.separator {
+  background-color: var(--border-color) !important;
+  border: none !important;
+}
+
+.monaco-menu .keybinding,
+.monaco-action-bar .keybinding {
+  color: var(--text-secondary) !important;
+}
+
+.monaco-menu .action-item:hover .keybinding,
+.monaco-menu .action-item.focused .keybinding {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 레이아웃 토글 버튼 */
+.layout-button {
+  background: none;
+  border: none;
+  color: #858585;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.layout-button:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.layout-button.active {
+  color: #d1d5db;
+  background-color: transparent;
+}
