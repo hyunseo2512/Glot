@@ -16,7 +16,7 @@ const DiffView: React.FC<DiffViewProps> = ({
     original,
     modified,
     language = 'typescript',
-    theme = 'gluon',
+    theme = 'modern-dark',
     height = '100%',
     width = '100%',
     readOnly = true,
@@ -27,7 +27,7 @@ const DiffView: React.FC<DiffViewProps> = ({
     useEffect(() => {
         if (monaco) {
             // Define custom theme if not already defined
-            monaco.editor.defineTheme('gluon', {
+            monaco.editor.defineTheme('tokyo-night', {
                 base: 'vs-dark',
                 inherit: true,
                 rules: [],

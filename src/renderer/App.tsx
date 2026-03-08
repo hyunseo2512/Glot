@@ -247,10 +247,10 @@ function App() {
   useEffect(() => {
     const root = document.documentElement;
     // Remove previous theme classes
-    root.classList.remove('theme-gluon', 'theme-modern-dark', 'theme-modern-white');
+    root.classList.remove('theme-tokyo-night', 'theme-modern-dark', 'theme-modern-white');
 
     // Add current theme class
-    const currentTheme = editorSettings.theme || 'gluon';
+    const currentTheme = editorSettings.theme || 'modern-dark';
     root.classList.add(`theme-${currentTheme}`);
   }, [editorSettings.theme]);
 
@@ -2566,6 +2566,10 @@ function App() {
             <SettingsPanel
               onClose={() => {
                 setSettingsOpen(false);
+                loadShortcuts();
+                loadEditorSettings();
+              }}
+              onApply={() => {
                 loadShortcuts();
                 loadEditorSettings();
               }}

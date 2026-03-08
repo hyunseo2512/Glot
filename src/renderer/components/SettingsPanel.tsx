@@ -8,6 +8,7 @@ import { useAuthStore } from '../store/authStore';
 interface SettingsPanelProps {
   onClose: () => void;
   onOpenSettingsJson?: (filePath: string) => void;
+  onApply?: () => void;
 }
 
 // ... inside SettingsPanel component
@@ -156,7 +157,7 @@ interface User {
 }
 
 type SettingsTab = 'editor' | 'github' | 'shortcuts' | 'members' | 'connection';
-function SettingsPanel({ onClose, onOpenSettingsJson }: SettingsPanelProps) {
+function SettingsPanel({ onClose, onOpenSettingsJson, onApply }: SettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('editor');
   const [editorSettings, setEditorSettings] = useState<EditorSettings>(DEFAULT_EDITOR_SETTINGS);
   const [githubSettings, setGithubSettings] = useState({
@@ -170,7 +171,6 @@ function SettingsPanel({ onClose, onOpenSettingsJson }: SettingsPanelProps) {
 
   const [shortcuts, setShortcuts] = useState<KeyBinding[]>(DEFAULT_SHORTCUTS);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [deleteConfirmUser, setDeleteConfirmUser] = useState<User | null>(null);
 
@@ -232,8 +232,6 @@ function SettingsPanel({ onClose, onOpenSettingsJson }: SettingsPanelProps) {
         setConnectionUrl('http://100.110.157.32:9000'); // Default to previous/Tailscale IP
       }
 
-      // 초기 로딩 완료 - 이제 저장 허용
-      setIsInitialLoad(false);
     };
     loadSettings();
   }, []);
@@ -255,10 +253,7 @@ function SettingsPanel({ onClose, onOpenSettingsJson }: SettingsPanelProps) {
     showToast('Connection URL saved. Please restart app to apply changes fully.');
   };
 
-  // settings.json에 저장 (초기 로딩 시 건너뛰기)
-  useEffect(() => {
-    if (isInitialLoad) return; // 초기 로딩 시 저장 안함
-
+  const handleApplyAll = async () => {
     const jsonSettings = {
       'editor.fontSize': editorSettings.fontSize,
       'editor.fontFamily': editorSettings.fontFamily,
@@ -272,12 +267,13 @@ function SettingsPanel({ onClose, onOpenSettingsJson }: SettingsPanelProps) {
       'editor.formatOnSave': editorSettings.formatOnSave,
       'editor.defaultFormatter': editorSettings.defaultFormatter,
     };
-    window.electron.settings.write(jsonSettings);
-  }, [editorSettings, isInitialLoad]);
-
-  useEffect(() => {
-    window.electron.store.set('key_bindings', shortcuts);
-  }, [shortcuts]);
+    await window.electron.settings.write(jsonSettings);
+    await window.electron.store.set('key_bindings', shortcuts);
+    showToast('Settings applied successfully.');
+    if (onApply) {
+      onApply();
+    }
+  };
 
   const handleEditorSettingChange = (key: keyof EditorSettings, value: any) => {
     setEditorSettings((prevSettings) => ({
@@ -680,7 +676,7 @@ function SettingsPanel({ onClose, onOpenSettingsJson }: SettingsPanelProps) {
                 </label>
                 <CustomDropdown
                   value={editorSettings.theme}
-                  options={['gluon', 'modern-dark', 'modern-white']}
+                  options={['modern-dark', 'modern-white', 'tokyo-night']}
                   onChange={(val) => handleEditorSettingChange('theme', val)}
                 />
               </div>
@@ -922,11 +918,10 @@ function SettingsPanel({ onClose, onOpenSettingsJson }: SettingsPanelProps) {
           </div>
         )}
 
-        {/* Gluon 테마 토스트 알림 */}
         {toastMessage && (
           <div style={{
             position: 'absolute',
-            bottom: '20px',
+            bottom: '80px',
             left: '50%',
             transform: 'translateX(-50%)',
             background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
@@ -944,6 +939,48 @@ function SettingsPanel({ onClose, onOpenSettingsJson }: SettingsPanelProps) {
             ✓ {toastMessage}
           </div>
         )}
+
+        {/* 푸터: 취소 및 적용 버튼 */}
+        <div style={{
+          padding: '16px 20px',
+          borderTop: '1px solid var(--border-color)',
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: '12px',
+          background: 'var(--bg-tertiary)'
+        }}>
+          <button
+            onClick={onClose}
+            style={{
+              padding: '6px 16px',
+              borderRadius: '6px',
+              border: '1px solid var(--border-color)',
+              background: 'transparent',
+              color: 'var(--text-primary)',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 500,
+              transition: 'background 0.2s'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleApplyAll}
+            className="save-button"
+            style={{
+              padding: '6px 24px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: 600
+            }}
+          >
+            Apply
+          </button>
+        </div>
+
       </div>
     </div >
   );

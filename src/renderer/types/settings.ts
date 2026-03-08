@@ -7,7 +7,7 @@ export interface EditorSettings {
     wordWrap: boolean;
     minimap: boolean;
     lineNumbers: boolean;
-    theme: 'gluon' | 'modern-dark' | 'modern-white' | string;
+    theme: 'tokyo-night' | 'modern-dark' | 'modern-white' | string;
     formatOnSave: boolean;
     defaultFormatter: string;
 }
@@ -21,7 +21,7 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
     wordWrap: false,
     minimap: false,
     lineNumbers: true,
-    theme: 'gluon',
+    theme: 'modern-dark',
     formatOnSave: false,
     defaultFormatter: 'none',
 };

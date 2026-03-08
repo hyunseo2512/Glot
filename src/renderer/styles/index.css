@@ -58,8 +58,8 @@
   --shadow: rgba(0, 0, 0, 0.8);
 }
 
-/* 1. Theme: Gluon (Tokyo Night Aesthetics) */
-.theme-gluon {
+/* 1. Theme: Tokyo Night */
+.theme-tokyo-night {
   --dark-0: #0B0C15;
   --dark-1: #13151f;
   --dark-2: #1e2230;
