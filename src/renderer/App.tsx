@@ -521,7 +521,6 @@ function App() {
   }, [workspaceDir, isRemoteWorkspace]);
 
   // 메뉴 외부 클릭 시 닫기
-  // 메뉴 외부 클릭 시 닫기
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
