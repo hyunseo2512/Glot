@@ -14,7 +14,7 @@
 
 <br>
 
-<img width="1361" height="1000" alt="image" src="https://github.com/user-attachments/assets/10c559ad-8e21-44aa-985b-2198add8e975" />
+<img width="1917" height="1192" alt="image" src="https://github.com/user-attachments/assets/1cc4b832-041b-4d90-86b2-f1e34e83c7d0" />
 
 > A modern, integrated computing environment powered by local Large Language Models (LLMs).
 
