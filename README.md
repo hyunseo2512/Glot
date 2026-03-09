@@ -14,7 +14,7 @@
 
 <br>
 
-<img width="1024" height="768" alt="image" src="https://github.com/user-attachments/assets/1cc4b832-041b-4d90-86b2-f1e34e83c7d0" />
+<img width="1361" height="1000" alt="Screenshot From 2026-03-09 22-53-53" src="https://github.com/user-attachments/assets/01617f43-10ba-4887-85aa-f2f1a55163eb" />
 
 <br>
 
