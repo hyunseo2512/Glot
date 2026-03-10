@@ -14,10 +14,6 @@
 
 <br>
 
-<img width="1361" height="1000" alt="Screenshot From 2026-03-09 22-53-53" src="https://github.com/user-attachments/assets/01617f43-10ba-4887-85aa-f2f1a55163eb" />
-
-<br>
-
 > A modern, integrated computing environment powered by local Large Language Models (LLMs).
 
 Gluon is an advanced Integrated Development Environment (IDE) that seamlessly integrates with a local LLM engine. It provides features like real-time AI assistance, context-aware code analysis, smart terminal management, and robust file editing capabilities.
