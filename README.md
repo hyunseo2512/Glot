@@ -1,8 +1,8 @@
 <div align="center">
-  <img src="public/icons/gluon-512.svg" alt="Gluon Logo" width="120" />
+  <img src="public/icons/gluon-512.svg" alt="Glot Logo" width="120" />
 </div>
 
-<h1 align="center">Gluon - AI-Powered IDE</h1>
+<h1 align="center">Glot - AI-Powered IDE</h1>
 
 <div align="center">
   <img src="https://img.shields.io/badge/version-0.1.0-success.svg" alt="Version">
@@ -21,7 +21,7 @@ Gluon is an advanced Integrated Development Environment (IDE) that seamlessly in
 Quick Start
 -----------
 
-* **Get the Source**: `git clone https://github.com/hyunseo2512/Gluon.git`
+* **Get the Source**: `git clone https://github.com/hyunseo2512/Glot.git`
 * **Install Dependencies**: `npm install`
 * **Run Development Server**: `npm run dev`
 * **Build for Linux**: `npm run build && npm run package`
