@@ -864,9 +864,9 @@ export const getIconForFile = (filename: string, size: number = 16) => {
     return <GradleIcon size={size} />;
   }
 
-  // .gluonrules 체크
-  if (basename.toLowerCase() === '.gluonrules') {
-    return <GluonRulesIcon size={size} />;
+  // .glotrules 체크
+  if (basename.toLowerCase() === '.glotrules') {
+    return <GlotRulesIcon size={size} />;
   }
 
   // README 체크
@@ -1095,7 +1095,7 @@ export const getIconForFolder = (folderName: string, isOpen: boolean, size: numb
   }
 };
 
-// Gluon Rules 아이콘 (앱 로고 기반)
+// Glot Rules 아이콘 (앱 로고 기반)
 
 // .env 파일 아이콘
 export const EnvIcon = ({ size = 16, className = '' }: IconProps) => (
@@ -1111,13 +1111,13 @@ export const ConfigIcon = ({ size = 16, className = '' }: IconProps) => (
 export const ReadmeIcon = ({ size = 16, className = '' }: IconProps) => (
   <SimpleIcon icon={siReadme} size={size} className={className} color="#018EF5" />
 );
-export const GluonRulesIcon = ({ size = 16, className = '' }: IconProps) => (
+export const GlotRulesIcon = ({ size = 16, className = '' }: IconProps) => (
   <img
-    src="icons/gluon-512.svg"
+    src="icons/glot-512.svg"
     width={size}
     height={size}
     className={className}
-    alt="Gluon"
+    alt="Glot"
     style={{ objectFit: 'contain' }}
   />
 );

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/icons/gluon-512.svg" alt="Glot Logo" width="120" />
+  <img src="public/icons/glot-512.svg" alt="Glot Logo" width="120" />
 </div>
 
 <h1 align="center">Glot - AI-Powered IDE</h1>
@@ -16,7 +16,7 @@
 
 > A modern, integrated computing environment powered by local Large Language Models (LLMs).
 
-Gluon is an advanced Integrated Development Environment (IDE) that seamlessly integrates with a local LLM engine. It provides features like real-time AI assistance, context-aware code analysis, smart terminal management, and robust file editing capabilities.
+Glot is an advanced Integrated Development Environment (IDE) that seamlessly integrates with a local LLM engine. It provides features like real-time AI assistance, context-aware code analysis, smart terminal management, and robust file editing capabilities.
 
 Quick Start
 -----------
@@ -31,8 +31,8 @@ Essential Documentation
 
 All users should be familiar with the following core principles:
 
-* **Project Description**: Gluon brings everything together in one unified pane: Write code, run tests in the integrated terminal, manage your Git history, and collaborate with your AI pair-programmer—all without ever leaving your window.
-* **Privacy & Security**: By hosting the LLM locally on your machine, Gluon ensures that your source code never leaves your workstation, preserving maximum intellectual property security.
+* **Project Description**: Glot brings everything together in one unified pane: Write code, run tests in the integrated terminal, manage your Git history, and collaborate with your AI pair-programmer—all without ever leaving your window.
+* **Privacy & Security**: By hosting the LLM locally on your machine, Glot ensures that your source code never leaves your workstation, preserving maximum intellectual property security.
 * **Prerequisites**: Node.js **v18.0+** and Python **v3.10+** (Required for the AI backend).
 
 For Specific Users
@@ -41,7 +41,7 @@ For Specific Users
 Software Engineer
 -----------------
 
-If you are developing software using Gluon, familiarize yourself with its core editing capabilities:
+If you are developing software using Glot, familiarize yourself with its core editing capabilities:
 
 * **Advanced Code Editor**: Built on Monaco Editor featuring syntax highlighting, auto-completion, and code formatting.
 * **Split Editor**: Edit multiple files simultaneously with horizontal/vertical split views. Toggle using `Ctrl + \`.

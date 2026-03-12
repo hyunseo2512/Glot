@@ -1,5 +1,5 @@
 {
-  "name": "gluon",
+  "name": "glot",
   "version": "0.1.0",
   "description": "AI-powered IDE integrated with Quark backend",
   "main": "dist/main/main.js",
@@ -67,8 +67,8 @@
     "vite-plugin-monaco-editor": "^1.1.0"
   },
   "build": {
-    "appId": "com.quark.gluon",
-    "productName": "Gluon",
+    "appId": "com.quark.glot",
+    "productName": "Glot",
     "asar": true,
     "directories": {
       "output": "release"
@@ -99,14 +99,14 @@
       ],
       "maintainer": "zxcvne <zxcvne@localhost>",
       "category": "Development",
-      "icon": "public/icons/gluon-512.svg",
+      "icon": "public/icons/glot-512.svg",
       "mimeTypes": [
-        "x-scheme-handler/gluon"
+        "x-scheme-handler/glot"
       ],
       "desktop": {
-        "Icon": "gluon",
-        "Name": "Gluon",
-        "StartupWMClass": "Gluon"
+        "Icon": "glot",
+        "Name": "Glot",
+        "StartupWMClass": "Glot"
       }
     },
     "deb": {
@@ -120,9 +120,9 @@
     },
     "protocols": [
       {
-        "name": "Gluon Protocol",
+        "name": "Glot Protocol",
         "schemes": [
-          "gluon"
+          "glot"
         ]
       }
     ]

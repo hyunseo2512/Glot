@@ -1,10 +1,10 @@
 # System Architecture Overview
 
-This document outlines the high-level architecture of the Gluon IDE.
+This document outlines the high-level architecture of the Glot IDE.
 
 ## 1. Core Paradigm
 
-Gluon is an Electron-based application comprising three primary components:
+Glot is an Electron-based application comprising three primary components:
 1. **Main Process (Backend)**: Manages OS-level APIs, window lifecycles, and backend services (Node.js).
 2. **Renderer Process (Frontend)**: Handles the user interface, React tree, and Monaco Editor.
 3. **Python AI Engine**: Runs local Large Language Models (LLMs) and context analysis.

@@ -1,10 +1,10 @@
 # Local AI Engine Integration
 
-Gluon differentiates itself by running entirely locally, ensuring that your code, prompts, and architectures never leave your machine.
+Glot differentiates itself by running entirely locally, ensuring that your code, prompts, and architectures never leave your machine.
 
 ## Supported Models
 
-Out of the box, Gluon recommends and supports:
+Out of the box, Glot recommends and supports:
 - **DeepSeek (Llama-based derivatives)**
 - **Llama 3 (8B Instruct)**
 - **Phi-3 (Mini/Medium)**

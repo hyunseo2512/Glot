@@ -59,11 +59,11 @@ const DebugPanel: React.FC<DebugPanelProps> = ({ workspaceDir, currentFilePath }
         const handleDebugStop = () => {
             handleStop();
         };
-        window.addEventListener('gluon:debug-run', handleDebugRun);
-        window.addEventListener('gluon:debug-stop', handleDebugStop);
+        window.addEventListener('glot:debug-run', handleDebugRun);
+        window.addEventListener('glot:debug-stop', handleDebugStop);
         return () => {
-            window.removeEventListener('gluon:debug-run', handleDebugRun);
-            window.removeEventListener('gluon:debug-stop', handleDebugStop);
+            window.removeEventListener('glot:debug-run', handleDebugRun);
+            window.removeEventListener('glot:debug-stop', handleDebugStop);
         };
     }, []);
 

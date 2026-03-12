@@ -1,11 +1,11 @@
 import { editor } from 'monaco-editor';
 
 /**
- * Gluon Markdown Theme (gluon-markdown)
+ * Glot Markdown Theme (glot-markdown)
  * 마크다운 전용 테마 - 읽기 쉽고 깔끔한 문서 편집 환경
  * 특징: 부드러운 색상, 헤딩 강조, 링크/코드 블록 구분
  */
-export const gluonMarkdownTheme: editor.IStandaloneThemeData = {
+export const glotMarkdownTheme: editor.IStandaloneThemeData = {
     base: 'vs-dark',
     inherit: true,
     rules: [
@@ -62,7 +62,7 @@ export const gluonMarkdownTheme: editor.IStandaloneThemeData = {
         { token: 'markup.table', foreground: 'E0E0E0' },
 
         // ── Embedded Language Tokens (for fenced code blocks) ──
-        // Python tokens → match gluon-quantum theme exactly
+        // Python tokens → match glot-quantum theme exactly
         { token: 'keyword.python', foreground: 'C792EA', fontStyle: 'bold' },
         { token: 'keyword.control.python', foreground: 'FF5370', fontStyle: 'bold' },
         { token: 'identifier.python', foreground: '82AAFF' },
@@ -77,7 +77,7 @@ export const gluonMarkdownTheme: editor.IStandaloneThemeData = {
         { token: 'delimiter.python', foreground: '89DDFF' },
         { token: 'type.python', foreground: 'FFCB6B' },
 
-        // JS/TS tokens → match gluon-neon theme exactly
+        // JS/TS tokens → match glot-neon theme exactly
         { token: 'keyword.javascript', foreground: 'C792EA', fontStyle: 'italic' },
         { token: 'keyword.typescript', foreground: 'C792EA', fontStyle: 'italic' },
         { token: 'identifier.javascript', foreground: 'BEC5D4' },
@@ -105,7 +105,7 @@ export const gluonMarkdownTheme: editor.IStandaloneThemeData = {
         { token: 'attribute.value.javascript', foreground: 'C3E88D' },
         { token: 'attribute.value.typescript', foreground: 'C3E88D' },
 
-        // C/C++ tokens → match gluon-carbon theme
+        // C/C++ tokens → match glot-carbon theme
         { token: 'keyword.c', foreground: 'C792EA' },
         { token: 'keyword.cpp', foreground: 'C792EA' },
         { token: 'identifier.c', foreground: 'BEC5D4' },
@@ -162,7 +162,7 @@ export const gluonMarkdownTheme: editor.IStandaloneThemeData = {
         { token: 'predefined.sql', foreground: '82AAFF' },
     ],
     colors: {
-        'editor.background': '#0B0C15', // Gluon 공통 배경색 (Deep Space Void)
+        'editor.background': '#0B0C15', // Glot 공통 배경색 (Deep Space Void)
         'editor.foreground': '#D4D4D4',
         'editorCursor.foreground': '#00BFFF', // Neon Blue Cursor
         'editor.lineHighlightBackground': '#00000000', // Disabled

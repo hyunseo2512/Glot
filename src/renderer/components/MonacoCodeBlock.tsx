@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import * as monacoEditor from 'monaco-editor';
-import { gluonQuantumTheme } from '../themes/gluonQuantum';
-import { gluonNeonTheme } from '../themes/gluonNeon';
-import { gluonCarbonTheme } from '../themes/gluonCarbon';
-import { gluonJavaTheme } from '../themes/gluonJava';
+import { glotQuantumTheme } from '../themes/glotQuantum';
+import { glotNeonTheme } from '../themes/glotNeon';
+import { glotCarbonTheme } from '../themes/glotCarbon';
+import { glotJavaTheme } from '../themes/glotJava';
 import type { editor } from 'monaco-editor';
 
-// ── Theme Mapping (Language → Gluon Theme) ──
+// ── Theme Mapping (Language → Glot Theme) ──
 const getThemeForLanguage = (lang: string): editor.IStandaloneThemeData => {
     switch (lang) {
         case 'python': case 'py':
-            return gluonQuantumTheme;
+            return glotQuantumTheme;
         case 'c': case 'cpp': case 'h': case 'hpp':
-            return gluonCarbonTheme;
+            return glotCarbonTheme;
         case 'java':
-            return gluonJavaTheme;
+            return glotJavaTheme;
         case 'javascript': case 'js': case 'typescript': case 'ts':
-            return gluonNeonTheme;
+            return glotNeonTheme;
         default: // HTML, CSS, etc.
-            return gluonNeonTheme;
+            return glotNeonTheme;
     }
 };
 

@@ -2,7 +2,7 @@ import { editor } from "monaco-editor";
 
 // Use 'any' cast because Monaco standalone's IStandaloneThemeData
 // doesn't expose 'semanticHighlighting', but it IS supported at runtime.
-export const gluonNeonTheme: editor.IStandaloneThemeData = {
+export const glotNeonTheme: editor.IStandaloneThemeData = {
     base: 'vs-dark',
     inherit: true,
     rules: [
@@ -70,4 +70,4 @@ export const gluonNeonTheme: editor.IStandaloneThemeData = {
 } as any;
 
 // Patch: force semanticHighlighting flag (not in TS types but supported at runtime)
-(gluonNeonTheme as any).semanticHighlighting = true;
+(glotNeonTheme as any).semanticHighlighting = true;

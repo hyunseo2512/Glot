@@ -67,9 +67,9 @@ class ErrorBoundary extends Component<Props, State> {
             alert("Error log copied to clipboard! Please email it to developer.");
             // If we had a backend email service, we would call it here.
             // For now, we open a mailto link
-            const subject = encodeURIComponent("Gluon Crash Report");
+            const subject = encodeURIComponent("Glot Crash Report");
             const body = encodeURIComponent(errorLog);
-            window.open(`mailto:dev@gluon.com?subject=${subject}&body=${body}`);
+            window.open(`mailto:dev@glot.com?subject=${subject}&body=${body}`);
         });
     };
 

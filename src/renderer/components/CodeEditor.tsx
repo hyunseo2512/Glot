@@ -5,11 +5,11 @@ import Editor, { DiffEditor, useMonaco, loader } from '@monaco-editor/react';
 import '../styles/CodeEditor.css';
 import { getIconForFile, ChevronLeftIcon, ChevronRightIcon, SplitIcon, SingleIcon } from './Icons';
 import MarkdownPreview from './MarkdownPreview';
-import { gluonQuantumTheme } from '../themes/gluonQuantum';
-import { gluonCarbonTheme } from '../themes/gluonCarbon';
-import { gluonMarkdownTheme } from '../themes/gluonMarkdown';
-import { gluonNeonTheme } from '../themes/gluonNeon';
-import { gluonJavaTheme } from '../themes/gluonJava';
+import { glotQuantumTheme } from '../themes/glotQuantum';
+import { glotCarbonTheme } from '../themes/glotCarbon';
+import { glotMarkdownTheme } from '../themes/glotMarkdown';
+import { glotNeonTheme } from '../themes/glotNeon';
+import { glotJavaTheme } from '../themes/glotJava';
 import * as monacoEditor from 'monaco-editor';
 import { emmetHTML, emmetCSS, emmetJSX } from 'emmet-monaco-es';
 
@@ -41,27 +41,27 @@ loader.init().then((monaco) => {
   monaco.languages.typescript.javascriptDefaults.setCompilerOptions(compilerOptions);
 
   // Define Theme Globally
-  // 1. Gluon Quantum (Python/SF Style)
-  monaco.editor.defineTheme('gluon-quantum', gluonQuantumTheme);
+  // 1. Glot Quantum (Python/SF Style)
+  monaco.editor.defineTheme('glot-quantum', glotQuantumTheme);
 
-  // 2. Gluon Carbon (C/C++ Style)
-  monaco.editor.defineTheme('gluon-carbon', gluonCarbonTheme);
+  // 2. Glot Carbon (C/C++ Style)
+  monaco.editor.defineTheme('glot-carbon', glotCarbonTheme);
 
-  // 3. Gluon Markdown (Markdown Specific)
-  monaco.editor.defineTheme('gluon-markdown', gluonMarkdownTheme);
+  // 3. Glot Markdown (Markdown Specific)
+  monaco.editor.defineTheme('glot-markdown', glotMarkdownTheme);
 
-  // 4. Gluon Neon (JS/TS/React)
-  monaco.editor.defineTheme('gluon-neon', gluonNeonTheme);
+  // 4. Glot Neon (JS/TS/React)
+  monaco.editor.defineTheme('glot-neon', glotNeonTheme);
 
-  // 5. Gluon Java (Java Exclusive)
-  monaco.editor.defineTheme('gluon-java', gluonJavaTheme);
+  // 5. Glot Java (Java Exclusive)
+  monaco.editor.defineTheme('glot-java', glotJavaTheme);
 
-  // 6. Gluon Classic (VS Dark + Gluon Background)
-  monaco.editor.defineTheme('gluon-classic', {
+  // 6. Glot Classic (VS Dark + Glot Background)
+  monaco.editor.defineTheme('glot-classic', {
     base: 'vs-dark',
     inherit: true,
     rules: [], // Inherit standard VS Dark highlighting
-    colors: gluonQuantumTheme.colors // Use same Deep Space background
+    colors: glotQuantumTheme.colors // Use same Deep Space background
   });
 
   // ─── Custom Semantic Token Provider for JS/TS ───
@@ -492,7 +492,7 @@ function CodeEditor({
     const handleLayoutResize = () => {
       editorInstance.layout();
     };
-    window.addEventListener('gluon-resize', handleLayoutResize);
+    window.addEventListener('glot-resize', handleLayoutResize);
 
     // Force layout update immediately
     setTimeout(() => {
@@ -500,7 +500,7 @@ function CodeEditor({
     }, 50);
 
     return () => {
-      window.removeEventListener('gluon-resize', handleLayoutResize);
+      window.removeEventListener('glot-resize', handleLayoutResize);
     };
   }, [editorInstance, settings, extraBottomPadding]);
 
@@ -539,12 +539,12 @@ function CodeEditor({
       editorInstance.focus();
     };
 
-    window.addEventListener('gluon:undo', handleUndo);
-    window.addEventListener('gluon:redo', handleRedo);
+    window.addEventListener('glot:undo', handleUndo);
+    window.addEventListener('glot:redo', handleRedo);
 
     return () => {
-      window.removeEventListener('gluon:undo', handleUndo);
-      window.removeEventListener('gluon:redo', handleRedo);
+      window.removeEventListener('glot:undo', handleUndo);
+      window.removeEventListener('glot:redo', handleRedo);
     };
   }, [editorInstance]);
 
@@ -561,8 +561,8 @@ function CodeEditor({
       }
     };
 
-    window.addEventListener('gluon:goto-line', handleGoToLine);
-    return () => window.removeEventListener('gluon:goto-line', handleGoToLine);
+    window.addEventListener('glot:goto-line', handleGoToLine);
+    return () => window.removeEventListener('glot:goto-line', handleGoToLine);
   }, [editorInstance]);
 
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -839,12 +839,12 @@ function CodeEditor({
                 theme={
                   settings?.theme === 'modern-dark' ? 'vs-dark' :
                     settings?.theme === 'modern-white' ? 'vs' :
-                      (language === 'markdown' ? 'gluon-markdown' :
-                        language === 'python' ? 'gluon-quantum' :
-                          (language === 'c' || language === 'cpp') ? 'gluon-carbon' :
-                            (language === 'javascript' || language === 'typescript') ? 'gluon-neon' :
-                              language === 'java' ? 'gluon-java' :
-                                'gluon-classic')
+                      (language === 'markdown' ? 'glot-markdown' :
+                        language === 'python' ? 'glot-quantum' :
+                          (language === 'c' || language === 'cpp') ? 'glot-carbon' :
+                            (language === 'javascript' || language === 'typescript') ? 'glot-neon' :
+                              language === 'java' ? 'glot-java' :
+                                'glot-classic')
                 }
                 options={{
                   renderSideBySide: true,
@@ -910,12 +910,12 @@ function CodeEditor({
                     theme={
                       settings?.theme === 'modern-dark' ? 'vs-dark' :
                         settings?.theme === 'modern-white' ? 'vs' :
-                          (language === 'markdown' ? 'gluon-markdown' :
-                            language === 'python' ? 'gluon-quantum' :
-                              (language === 'c' || language === 'cpp') ? 'gluon-carbon' :
-                                (language === 'javascript' || language === 'typescript') ? 'gluon-neon' :
-                                  language === 'java' ? 'gluon-java' :
-                                    'gluon-classic')
+                          (language === 'markdown' ? 'glot-markdown' :
+                            language === 'python' ? 'glot-quantum' :
+                              (language === 'c' || language === 'cpp') ? 'glot-carbon' :
+                                (language === 'javascript' || language === 'typescript') ? 'glot-neon' :
+                                  language === 'java' ? 'glot-java' :
+                                    'glot-classic')
                     }
                     beforeMount={(monaco) => {
                       const configurePrettier = (lang: string, parser: string, plugins: any[]) => {
@@ -976,7 +976,7 @@ function CodeEditor({
           <div className="editor-empty-state">
             {/* Logo */}
             <div className="empty-logo">
-              <span className={`logo-text ${user?.role === 'root' ? 'root' : ''}`}>Gluon</span>
+              <span className={`logo-text ${user?.role === 'root' ? 'root' : ''}`}>Glot</span>
               <span className="logo-edition">Pro Edition</span>
             </div>
 

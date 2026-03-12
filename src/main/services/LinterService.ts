@@ -35,7 +35,7 @@ export class LinterService {
      */
     async checkPython(filePath: string): Promise<LintResult[]> {
         // Debug logging to specific file - Initialize FIRST
-        const logFile = '/tmp/gluon_linter.log';
+        const logFile = '/tmp/glot_linter.log';
         const log = (msg: string) => {
             try { fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`); } catch (e) { }
         };
@@ -113,7 +113,7 @@ export class LinterService {
      * Check C/C++ file using GCC/G++
      */
     async checkC(filePath: string): Promise<LintResult[]> {
-        const logFile = '/tmp/gluon_linter.log';
+        const logFile = '/tmp/glot_linter.log';
         const log = (msg: string) => {
             try { fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`); } catch (e) { }
         };

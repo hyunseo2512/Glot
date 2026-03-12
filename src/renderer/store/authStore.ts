@@ -80,8 +80,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
         console.log('🔗 Login Target URL:', BACKEND_URL);
 
-        // Eden Backend로 직접 요청 (source=desktop&callback_scheme=gluon 파라미터 추가)
-        const loginUrl = `${BACKEND_URL}/auth/login/google?source=desktop&callback_scheme=gluon`;
+        // Eden Backend로 직접 요청 (source=desktop&callback_scheme=glot 파라미터 추가)
+        const loginUrl = `${BACKEND_URL}/auth/login/google?source=desktop&callback_scheme=glot`;
 
         // 메인 프로세스(IPC)를 통해 브라우저 열기
         await window.electron.shell.openExternal(loginUrl);

@@ -24,7 +24,7 @@ import {
   HomeIcon,
   UpdateIcon
 } from './components/Icons';
-import gluonLogo from '/icons/gluon-512.svg';
+import glotLogo from '/icons/glot-512.svg';
 import './styles/App.css';
 import SSHConnectionModal from './components/SSHConnectionModal';
 import WelcomeScreen from './components/WelcomeScreen';
@@ -32,7 +32,7 @@ import UnsavedChangesModal from './components/UnsavedChangesModal';
 import InAppFileBrowser, { FileBrowserMode } from './components/InAppFileBrowser';
 
 /**
- * Gluon 메인 애플리케이션 컴포넌트 - VS Code 스타일 레이아웃
+ * Glot 메인 애플리케이션 컴포넌트 - VS Code 스타일 레이아웃
  */
 // OpenFile interface moved to types/file.ts
 
@@ -1701,7 +1701,7 @@ function App() {
 
     // Give time for terminal to mount/wake up
     setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('gluon:run-command', {
+      window.dispatchEvent(new CustomEvent('glot:run-command', {
         detail: { command, file: currentFile.path }
       }));
     }, 100);
@@ -1716,7 +1716,7 @@ function App() {
     if (currentFile.path.endsWith('.py')) {
       if (!isTerminalOpen) setIsTerminalOpen(true);
       setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('gluon:run-command', {
+        window.dispatchEvent(new CustomEvent('glot:run-command', {
           detail: { command: `python3 -m pdb "${currentFile.path}"`, file: currentFile.path }
         }));
       }, 100);
@@ -1775,14 +1775,14 @@ function App() {
 
             // Dispatch event for TerminalPanel to handle UI + Process
             setTimeout(() => {
-              window.dispatchEvent(new CustomEvent('gluon:run-command', {
+              window.dispatchEvent(new CustomEvent('glot:run-command', {
                 detail: { command, file: currentFile.path }
               }));
             }, isTerminalOpen ? 0 : 300); // Small delay if opening terminal for the first time
           }
         } else if (e.shiftKey) {
           // Shift+F5: Stop Debug
-          window.dispatchEvent(new CustomEvent('gluon:debug-stop'));
+          window.dispatchEvent(new CustomEvent('glot:debug-stop'));
         } else {
           // Ctrl+F5: Start Debugging via Debug Panel
           const currentFile = activeGroup === 'primary'
@@ -1792,7 +1792,7 @@ function App() {
             if (currentFile.isDirty) {
               handleFileSave(activeGroup === 'primary' ? primaryActiveIndex : secondaryActiveIndex);
             }
-            window.dispatchEvent(new CustomEvent('gluon:debug-run', {
+            window.dispatchEvent(new CustomEvent('glot:debug-run', {
               detail: { filePath: currentFile.path, cwd: workspaceDir }
             }));
           }
@@ -1812,7 +1812,7 @@ function App() {
       <header className="app-header">
         <div className="header-left">
           <div className="app-title">
-            <img src={gluonLogo} alt="Gluon" className="app-logo" />
+            <img src={glotLogo} alt="Glot" className="app-logo" />
           </div>
           <div className="app-menu">
             <div className="menu-dropdown">
@@ -1881,7 +1881,7 @@ function App() {
                 <div className="dropdown-content">
                   <div className="dropdown-item" onClick={() => {
                     setEditMenuOpen(false);
-                    window.dispatchEvent(new Event('gluon:undo'));
+                    window.dispatchEvent(new Event('glot:undo'));
                   }}>
                     <RotateCcwIcon size={14} />
                     <span style={{ flex: 1 }}>Undo</span>
@@ -1889,7 +1889,7 @@ function App() {
                   </div>
                   <div className="dropdown-item" onClick={() => {
                     setEditMenuOpen(false);
-                    window.dispatchEvent(new Event('gluon:redo'));
+                    window.dispatchEvent(new Event('glot:redo'));
                   }}>
                     <RotateCwIcon size={14} />
                     <span style={{ flex: 1 }}>Redo</span>
@@ -1989,7 +1989,7 @@ function App() {
                   </div>
                   <div className="dropdown-item" onClick={() => {
                     setHelpMenuOpen(false);
-                    setAlertMessage('You are using the latest version of Gluon (v0.1.0).');
+                    setAlertMessage('You are using the latest version of Glot (v0.1.0).');
                   }}>
                     <UpdateIcon size={14} />
                     <span>Check for Updates</span>
@@ -2367,11 +2367,11 @@ function App() {
                       setTimeout(() => {
                         setIsTerminalOpen(false);
                         setTerminalHeight(250);
-                        window.dispatchEvent(new Event('gluon-resize')); // Notify layout change
+                        window.dispatchEvent(new Event('glot-resize')); // Notify layout change
                       }, 0);
                       return 250;
                     }
-                    window.dispatchEvent(new Event('gluon-resize')); // Notify layout change
+                    window.dispatchEvent(new Event('glot-resize')); // Notify layout change
                     return Math.max(100, newHeight);
                   });
                 }}
@@ -2382,7 +2382,7 @@ function App() {
                 onClose={() => {
                   setIsTerminalOpen(false);
                   setIsTerminalMaximized(false);
-                  setTimeout(() => window.dispatchEvent(new Event('gluon-resize')), 0);
+                  setTimeout(() => window.dispatchEvent(new Event('glot-resize')), 0);
                 }}
                 onMaximize={handleToggleTerminalMaximize}
                 isMaximized={isTerminalMaximized}
@@ -2462,7 +2462,7 @@ function App() {
             onClick={() => {
               setIsTerminalOpen(true);
               setTimeout(() => {
-                window.dispatchEvent(new CustomEvent('gluon:open-problems'));
+                window.dispatchEvent(new CustomEvent('glot:open-problems'));
               }, 50);
             }}
           >

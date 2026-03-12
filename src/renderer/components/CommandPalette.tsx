@@ -92,7 +92,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onFileSelect, workspace
             if (searchQuery.startsWith(':')) {
                 const line = parseInt(searchQuery.slice(1), 10);
                 if (!isNaN(line)) {
-                    const event = new CustomEvent('gluon:goto-line', { detail: line });
+                    const event = new CustomEvent('glot:goto-line', { detail: line });
                     window.dispatchEvent(event);
                     actions.closePalette();
                 }
@@ -176,7 +176,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onFileSelect, workspace
                             className={`command-item selected`}
                             onClick={() => {
                                 if (goToLineNumber && !isNaN(goToLineNumber)) {
-                                    const event = new CustomEvent('gluon:goto-line', { detail: goToLineNumber });
+                                    const event = new CustomEvent('glot:goto-line', { detail: goToLineNumber });
                                     window.dispatchEvent(event);
                                     actions.closePalette();
                                 }

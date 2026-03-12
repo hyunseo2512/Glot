@@ -42,7 +42,7 @@ export function LoginScreen() {
         <div className="login-screen">
             <div className="login-content">
                 <div className="login-header">
-                    <h1>Gluon</h1>
+                    <h1>Glot</h1>
                     <p>PRO • V0.1.0</p>
                 </div>
 

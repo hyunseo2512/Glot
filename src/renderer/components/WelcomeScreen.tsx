@@ -88,7 +88,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         <div className="welcome-screen" ref={containerRef} onKeyDown={handleKeyDown}>
             <div className="welcome-content">
                 <div className={`welcome-logo ${user?.role === 'root' ? 'root' : ''}`}>
-                    <h1>Gluon</h1>
+                    <h1>Glot</h1>
                     <span className="welcome-version">Pro • v0.1.0</span>
                 </div>
 

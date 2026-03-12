@@ -187,7 +187,7 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
       console.log(`Terminal ${terminalId} exited with code ${code}`);
 
       // If it's the Run tab, don't close it automatically so user can see output
-      if (terminalId === 'gluon-run-terminal') {
+      if (terminalId === 'glot-run-terminal') {
         const tab = tabsRef.current.find(t => t.id === terminalId) as TerminalTab;
         if (tab && tab.type === 'terminal') {
           tab.term.write(`\r\n\x1b[33mProcess exited with code ${code}\x1b[0m\r\n`);
@@ -311,7 +311,7 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
       const command = typeof detail === 'string' ? detail : detail.command;
       const file = typeof detail === 'string' ? null : detail.file;
 
-      console.log('gluon:run-command received:', { command, file, isRemote: isRemoteRef.current });
+      console.log('glot:run-command received:', { command, file, isRemote: isRemoteRef.current });
 
       if (!command) return;
 
@@ -328,7 +328,7 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
       }
 
 
-      console.log('gluon:run-command received:', { command, file, isRemote: isRemoteRef.current });
+      console.log('glot:run-command received:', { command, file, isRemote: isRemoteRef.current });
 
       if (!command) return;
 
@@ -373,7 +373,7 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
 
       (async () => {
         // Single Run Instance Logic
-        const RUN_TAB_ID = 'gluon-run-terminal';
+        const RUN_TAB_ID = 'glot-run-terminal';
 
         // 1. Clean up existing run instance if present
         const existingRunTab = tabs.find(t => t.id === RUN_TAB_ID);
@@ -445,15 +445,15 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
       }
     };
 
-    window.addEventListener('gluon:run-command', handleRunCommand as EventListener);
-    window.addEventListener('gluon:open-problems', handleOpenProblems as EventListener);
+    window.addEventListener('glot:run-command', handleRunCommand as EventListener);
+    window.addEventListener('glot:open-problems', handleOpenProblems as EventListener);
     window.addEventListener('terminal-switch-tab', handleSwitchTabEvent as EventListener);
     window.addEventListener('terminal-close-tab', handleCloseTabEvent);
     window.addEventListener('terminal-focus', handleFocusEvent);
 
     return () => {
-      window.removeEventListener('gluon:run-command', handleRunCommand as EventListener);
-      window.removeEventListener('gluon:open-problems', handleOpenProblems as EventListener);
+      window.removeEventListener('glot:run-command', handleRunCommand as EventListener);
+      window.removeEventListener('glot:open-problems', handleOpenProblems as EventListener);
       window.removeEventListener('terminal-switch-tab', handleSwitchTabEvent as EventListener);
       window.removeEventListener('terminal-close-tab', handleCloseTabEvent);
       window.removeEventListener('terminal-focus', handleFocusEvent);

@@ -1,10 +1,10 @@
 # Customizing the IDE Theme
 
-Gluon supports dynamic theming using CSS variables, allowing users to customize their workspace instantly.
+Glot supports dynamic theming using CSS variables, allowing users to customize their workspace instantly.
 
 ## Available Themes
 
-1. **Gluon (Tokyo Night)**: The default, deep purple/blue dark aesthetic.
+1. **Glot (Tokyo Night)**: The default, deep purple/blue dark aesthetic.
 2. **Modern Dark**: A high-contrast, deep black dark mode (`#0D0D0D` base).
 3. **Modern White**: A clean, bright light mode with dark text for daytime development.
 

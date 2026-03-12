@@ -25,7 +25,7 @@ interface ChatSession {
 /**
  * AI 에이전트 패널 (Ctrl+L로 토글)
  */
-function AIPanel({ onClose, projectName = 'Gluon', workspacePath, onFileSystemChange, onCloseFile }: AIPanelProps) {
+function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemChange, onCloseFile }: AIPanelProps) {
   const { user } = useAuthStore();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -80,7 +80,7 @@ function AIPanel({ onClose, projectName = 'Gluon', workspacePath, onFileSystemCh
     const initChat = async () => {
       try {
         const homeDir = await window.electron.app.getPath('home');
-        const chatDir = `${homeDir}/.gluon/chats`;
+        const chatDir = `${homeDir}/.glot/chats`;
 
         // Ensure directory exists
         const dirCheck = await window.electron.fs.exists(chatDir);
@@ -131,7 +131,7 @@ function AIPanel({ onClose, projectName = 'Gluon', workspacePath, onFileSystemCh
   const loadHistoryList = async () => {
     try {
       const homeDir = await window.electron.app.getPath('home');
-      const chatDir = `${homeDir}/.gluon/chats`;
+      const chatDir = `${homeDir}/.glot/chats`;
       const result = await window.electron.fs.readDir(chatDir);
 
       if (result.success && result.files) {
@@ -195,7 +195,7 @@ function AIPanel({ onClose, projectName = 'Gluon', workspacePath, onFileSystemCh
     if (!deleteSessionId) return;
     try {
       const homeDir = await window.electron.app.getPath('home');
-      const filePath = `${homeDir}/.gluon/chats/${deleteSessionId}.json`;
+      const filePath = `${homeDir}/.glot/chats/${deleteSessionId}.json`;
 
       const result = await window.electron.fs.delete(filePath);
       if (result.success) {
@@ -217,7 +217,7 @@ function AIPanel({ onClose, projectName = 'Gluon', workspacePath, onFileSystemCh
     try {
       setSessionId(sid);
       const homeDir = await window.electron.app.getPath('home');
-      const filePath = `${homeDir}/.gluon/chats/${sid}.json`;
+      const filePath = `${homeDir}/.glot/chats/${sid}.json`;
 
       const result = await window.electron.fs.readFile(filePath);
       if (result.success && result.content) {
@@ -241,7 +241,7 @@ function AIPanel({ onClose, projectName = 'Gluon', workspacePath, onFileSystemCh
     const timer = setTimeout(async () => {
       try {
         const homeDir = await window.electron.app.getPath('home');
-        const chatDir = `${homeDir}/.gluon/chats`;
+        const chatDir = `${homeDir}/.glot/chats`;
         const filePath = `${chatDir}/${sessionId}.json`;
 
         await window.electron.fs.writeFile(filePath, JSON.stringify(messages, null, 2));
@@ -325,7 +325,7 @@ function AIPanel({ onClose, projectName = 'Gluon', workspacePath, onFileSystemCh
 
       if (workspacePath) {
         try {
-          const rulesPath = `${workspacePath}/.gluon_rules`;
+          const rulesPath = `${workspacePath}/.glot_rules`;
           const exists = await window.electron.fs.exists(rulesPath);
           if (exists.success && exists.exists) {
             const rulesContent = await window.electron.fs.readFile(rulesPath);

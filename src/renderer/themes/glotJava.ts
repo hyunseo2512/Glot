@@ -1,6 +1,6 @@
 import { editor } from 'monaco-editor';
 
-export const gluonJavaTheme: editor.IStandaloneThemeData = {
+export const glotJavaTheme: editor.IStandaloneThemeData = {
     base: 'vs-dark',
     inherit: true,
     semanticHighlighting: true, // Enable semantic highlighting explicitly

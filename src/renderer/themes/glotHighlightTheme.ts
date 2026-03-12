@@ -46,7 +46,7 @@ export default {
         "whiteSpace": "normal"
     },
 
-    // Core Syntax (Global Gluon Neon Palette)
+    // Core Syntax (Global Glot Neon Palette)
     "comment": { "color": "#546E7A", "fontStyle": "italic" },
     "prolog": { "color": "#546E7A" },
     "doctype": { "color": "#546E7A" },

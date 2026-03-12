@@ -61,8 +61,8 @@ function createWindow(): void {
 
   // 아이콘 경로 (개발/프로덕션 모드 대응)
   const iconPath = isDev
-    ? path.join(__dirname, '../../public/icons/gluon-512.svg')
-    : path.join(__dirname, '../public/icons/gluon-512.svg');
+    ? path.join(__dirname, '../../public/icons/glot-512.svg')
+    : path.join(__dirname, '../public/icons/glot-512.svg');
 
   // 저장된 윈도우 상태 복원
   const Store = require('electron-store');
@@ -77,7 +77,7 @@ function createWindow(): void {
     y: savedBounds.y,
     minWidth: 800,
     minHeight: 600,
-    title: 'Gluon - AI IDE',
+    title: 'Glot - AI IDE',
     icon: iconPath, // 앱 아이콘
     frame: false, // 네이티브 타이틀바 완전히 제거
     webPreferences: {
@@ -717,7 +717,7 @@ function setupIpcHandlers(): void {
       if (initialCommand && shellType !== 'tmux') {
         // Debug logging to file
         try {
-          require('fs').appendFileSync('/tmp/gluon_debug.log', `[${new Date().toISOString()}] terminal:start id=${terminalId} cmd=${initialCommand}\n`);
+          require('fs').appendFileSync('/tmp/glot_debug.log', `[${new Date().toISOString()}] terminal:start id=${terminalId} cmd=${initialCommand}\n`);
         } catch (e) { /* ignore */ }
 
         // Execute command and exit (no interactive shell)
@@ -725,7 +725,7 @@ function setupIpcHandlers(): void {
         args.push('-c', initialCommand);
       } else if (shellType === 'tmux') {
         // Create or attach to session
-        args.push('new-session', '-A', '-s', 'gluon-session');
+        args.push('new-session', '-A', '-s', 'glot-session');
       }
 
       const ptyProcess = pty.spawn(shell, args, {
@@ -1424,13 +1424,13 @@ function setupIpcHandlers(): void {
   });
 }
 
-// 딥링킹 핸들러 (Gluon Protocol)
+// 딥링킹 핸들러 (Glot Protocol)
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient('gluon', process.execPath, [path.resolve(process.argv[1])]);
+    app.setAsDefaultProtocolClient('glot', process.execPath, [path.resolve(process.argv[1])]);
   }
 } else {
-  app.setAsDefaultProtocolClient('gluon');
+  app.setAsDefaultProtocolClient('glot');
 }
 
 /**
@@ -1448,17 +1448,17 @@ app.whenReady().then(() => {
   });
 
   // [CRITICAL] 프로토콜 핸들러 등록 (Linux/Windows에서 필수)
-  if (!app.isDefaultProtocolClient('gluon')) {
+  if (!app.isDefaultProtocolClient('glot')) {
     const args = [];
     if (process.argv.length > 1) {
       args.push(path.resolve(process.argv[1]));
     }
-    app.setAsDefaultProtocolClient('gluon', process.execPath, args);
+    app.setAsDefaultProtocolClient('glot', process.execPath, args);
   }
 
   // [Fix] Windows/Linux: 앱 시작 시 인자로 넘어온 URL 처리 (Primary Instance)
   if (process.platform !== 'darwin') {
-    const url = process.argv.find(arg => arg.startsWith('gluon://'));
+    const url = process.argv.find(arg => arg.startsWith('glot://'));
     if (url) {
       console.log('🚀 Startup Deep Link Found:', url);
       // 윈도우가 준비될 때까지 잠시 대기
@@ -1481,8 +1481,8 @@ if (!gotTheLock) {
       win.focus();
     }
 
-    // gluon:// 프로토콜 처리 (Windows/Linux)
-    const url = commandLine.find(arg => arg.startsWith('gluon://'));
+    // glot:// 프로토콜 처리 (Windows/Linux)
+    const url = commandLine.find(arg => arg.startsWith('glot://'));
     if (url) {
       handleDeepLink(url);
     }
@@ -1498,7 +1498,7 @@ app.on('open-url', (event, url) => {
 // 딥링킹 URL 파싱 및 처리
 function handleDeepLink(url: string) {
   console.log('🔗 Deep link received:', url);
-  const logFile = '/tmp/gluon_main.log';
+  const logFile = '/tmp/glot_main.log';
   try {
     require('fs').appendFileSync(logFile, `[DeepLink] Received: ${url}\n`);
   } catch (e) { }
@@ -1506,7 +1506,7 @@ function handleDeepLink(url: string) {
   try {
     const urlObj = new URL(url);
 
-    // gluon://auth?token=...
+    // glot://auth?token=...
     if (urlObj.host === 'auth') {
       const token = urlObj.searchParams.get('token');
       if (token) {
@@ -1749,5 +1749,5 @@ app.on('window-all-closed', () => {
  */
 app.on('before-quit', () => {
   // 리소스 정리
-  console.log('Gluon shutting down...');
+  console.log('Glot shutting down...');
 });

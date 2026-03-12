@@ -1,10 +1,10 @@
 import { editor } from 'monaco-editor';
 
 /**
- * Gluon Carbon - C/C++ 전용 테마
+ * Glot Carbon - C/C++ 전용 테마
  * 네온 SF 스타일 with 시스템 프로그래밍 감성
  */
-export const gluonCarbonTheme: editor.IStandaloneThemeData = {
+export const glotCarbonTheme: editor.IStandaloneThemeData = {
     base: 'vs-dark',
     inherit: true,
     rules: [

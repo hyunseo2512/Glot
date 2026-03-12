@@ -1,6 +1,6 @@
 import { editor } from 'monaco-editor';
 
-export const gluonQuantumTheme: editor.IStandaloneThemeData = {
+export const glotQuantumTheme: editor.IStandaloneThemeData = {
     base: 'vs-dark',
     inherit: true,
     rules: [

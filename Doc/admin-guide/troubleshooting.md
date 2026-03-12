@@ -1,9 +1,9 @@
 # Troubleshooting Guide
 
-This guide helps administrators and developers diagnose common issues encountered while running or building Gluon.
+This guide helps administrators and developers diagnose common issues encountered while running or building Glot.
 
 ## 1. Native Module Compilation Errors (node-pty)
-Gluon utilizes `node-pty` for the integrated terminal. Since it is a native C++ module, it must be rebuilt whenever the Node.js or Electron version changes.
+Glot utilizes `node-pty` for the integrated terminal. Since it is a native C++ module, it must be rebuilt whenever the Node.js or Electron version changes.
 
 **Symptom:** The IDE launches, but the terminal panel crashes or fails to open with an `Uncaught Exception` regarding `node-pty`.
 
