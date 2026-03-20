@@ -89,7 +89,6 @@
       "target": [
         "AppImage",
         "deb",
-        "pacman",
         "rpm"
       ],
       "executableArgs": [
@@ -110,9 +109,6 @@
       }
     },
     "deb": {
-      "afterInstall": "build/after-install.sh"
-    },
-    "pacman": {
       "afterInstall": "build/after-install.sh"
     },
     "rpm": {
