@@ -191,6 +191,7 @@ import { useCommandStore } from './store/commandStore'; // Added this import for
 
 
 import EditorPane from './components/EditorPane';
+import UpdateBanner from './components/UpdateBanner';
 
 function App() {
   const isLoginModalOpen = useAuthStore((state) => state.isLoginModalOpen);
@@ -1808,6 +1809,7 @@ function App() {
     <div className="app">
       <CommandPalette onFileSelect={handleFileOpen} workspaceDir={workspaceDir} />
       <GlobalTooltip />
+      <UpdateBanner />
       {/* ... header ... */}
       <header className="app-header">
         <div className="header-left">

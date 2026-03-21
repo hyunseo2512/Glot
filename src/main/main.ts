@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, net } from 'electron';
 import path from 'path';
 import { pythonService } from './services/pythonService';
 import { linterService } from './services/LinterService';
@@ -122,6 +122,11 @@ function createWindow(): void {
     win.show();
     // 개발자 도구 (선택적)
     // if (isDev) win.webContents.openDevTools();
+  });
+
+  // 렌더러 로드 완료 후 업데이트 체크 (앱 시작 5초 후)
+  win.webContents.once('did-finish-load', () => {
+    setTimeout(() => checkForUpdates(win), 5000);
   });
 
   // 개발 모드: Vite 개발 서버 로드
@@ -1431,6 +1436,44 @@ if (process.defaultApp) {
   }
 } else {
   app.setAsDefaultProtocolClient('glot');
+}
+
+/**
+ * GitHub Releases API로 최신 버전 체크 후 렌더러에 알림
+ */
+function checkForUpdates(win: BrowserWindow): void {
+  if (isDev) return;
+
+  const currentVersion = app.getVersion();
+
+  const request = net.request({
+    method: 'GET',
+    url: 'https://api.github.com/repos/hyunseo2512/Glot/releases/latest',
+    headers: { 'User-Agent': 'Glot-App' },
+  });
+
+  request.on('response', (response) => {
+    let data = '';
+    response.on('data', (chunk) => { data += chunk.toString(); });
+    response.on('end', () => {
+      try {
+        const release = JSON.parse(data);
+        if (!release.tag_name) return;
+        const latestVersion = release.tag_name.replace(/^v/, '');
+        if (latestVersion !== currentVersion) {
+          win.webContents.send('update:available', {
+            version: latestVersion,
+            url: release.html_url,
+          });
+        }
+      } catch (_e) {
+        // 파싱 실패 시 조용히 무시
+      }
+    });
+  });
+
+  request.on('error', () => {}); // 네트워크 오류 무시
+  request.end();
 }
 
 /**

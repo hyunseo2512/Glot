@@ -69,6 +69,9 @@ declare global {
             shell: {
                 openExternal: (url: string) => Promise<void>;
             };
+            update: {
+                onAvailable: (callback: (info: { version: string; url: string }) => void) => (() => void);
+            };
             search: {
                 text: (workingDir: string, query: string) => Promise<{ success: boolean; results?: Array<{ file: string; isDirectory: boolean; name: string }>; error?: string }>;
                 files: (workingDir: string, query: string) => Promise<{ success: boolean; files?: string[]; error?: string }>;

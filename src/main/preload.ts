@@ -143,6 +143,15 @@ contextBridge.exposeInMainWorld('electron', {
     openExternal: (url: string) => ipcRenderer.invoke('shell:openExternal', url),
   },
 
+  // 업데이트 알림
+  update: {
+    onAvailable: (callback: (info: { version: string; url: string }) => void) => {
+      const listener = (_event: any, info: { version: string; url: string }) => callback(info);
+      ipcRenderer.on('update:available', listener);
+      return () => ipcRenderer.removeListener('update:available', listener);
+    },
+  },
+
   // Git 기능
   git: {
     init: (workingDir: string) => ipcRenderer.invoke('git:init', workingDir),
