@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ChatMessage } from '../types';
 import QuarkApi from '../services/api';
-import { useAuthStore } from '../store/authStore';
 import { SendIcon, PaperclipIcon, MicIcon, HistoryIcon, PlusIcon, ChevronUpIcon, ChevronDownIcon, ChatBubbleIcon, InfinityIcon, RotateCcwIcon, TrashIcon } from './Icons';
 import MarkdownRenderer from './MarkdownRenderer';
 import DiffView from './DiffView';
@@ -26,7 +25,6 @@ interface ChatSession {
  * AI 에이전트 패널 (Ctrl+L로 토글)
  */
 function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemChange, onCloseFile }: AIPanelProps) {
-  const { user } = useAuthStore();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -66,14 +64,6 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
       if (timer) clearInterval(timer);
     };
   }, [isLoading]);
-
-  // Handle Logout: Clear messages if user logs out
-  useEffect(() => {
-    if (!user) {
-      setMessages([]);
-      setSessionId(Date.now().toString());
-    }
-  }, [user]);
 
   // Initialize Chat & Migrate
   useEffect(() => {
@@ -526,35 +516,6 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
   };
 
   const renderInputArea = () => {
-    // [RESTRICTION] Block 'user' role
-    if (user?.role === 'user') {
-      return (
-        <div className="ai-input-area" style={{ borderTop: 'none', padding: '0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '200px' }}>
-          <div style={{
-            textAlign: 'center',
-            padding: '24px',
-            border: '1px solid var(--border-color)',
-            borderRadius: '12px',
-            background: 'var(--bg-secondary)',
-            maxWidth: '400px',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <h3 style={{
-              fontSize: '15px',
-              fontWeight: '600',
-              color: 'var(--text-primary)',
-              margin: 0
-            }}>
-              승인 대기중 (Waiting for Approval)
-            </h3>
-          </div>
-        </div>
-      );
-    }
-
     const isInitial = messages.length === 0;
     const DropdownIcon = isInitial ? ChevronDownIcon : ChevronUpIcon;
     return (
@@ -685,21 +646,19 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
           </h3>
         </div>
         <div className="ai-header-actions">
-          {user && (
-            <>
-              <button className="icon-button" onClick={() => { handleNewChat(); }} title="New Chat">
-                <PlusIcon size={16} />
-              </button>
-              <button
-                className="icon-button"
-                onClick={toggleHistory}
-                title="History"
-                style={showHistory ? { color: 'var(--text-primary)', backgroundColor: 'var(--bg-hover)' } : {}}
-              >
-                <HistoryIcon size={16} />
-              </button>
-            </>
-          )}
+          <>
+            <button className="icon-button" onClick={() => { handleNewChat(); }} title="New Chat">
+              <PlusIcon size={16} />
+            </button>
+            <button
+              className="icon-button"
+              onClick={toggleHistory}
+              title="History"
+              style={showHistory ? { color: 'var(--text-primary)', backgroundColor: 'var(--bg-hover)' } : {}}
+            >
+              <HistoryIcon size={16} />
+            </button>
+          </>
           <button className="close-button" onClick={onClose} title="Close (Ctrl+L)">
             ✕
           </button>
@@ -713,40 +672,17 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
           // Empty State Layout
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 20px', gap: '24px', marginTop: '-40px' }}>
             <div style={{ width: '100%', maxWidth: '600px' }}>
-              {user ? (
-                <>
-                  {user.role !== 'user' && (
-                    <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                      <h2 className={`hello-greeting ${user.role === 'root' ? 'root-anim' : ''}`}>
-                        Hello, {user.full_name?.split(' ')[0] || 'Captain'}
-                      </h2>
-                      <p style={{ color: 'var(--text-secondary)', marginTop: '8px', fontSize: '14px' }}>
-                        How can I facilitate your coding journey?
-                      </p>
-                    </div>
-                  )}
-                  {renderInputArea()}
-                </>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-                  <div style={{
-                    width: '64px',
-                    height: '64px',
-                    borderRadius: '50%',
-                    background: 'var(--bg-tertiary)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: '16px',
-                    border: '1px solid var(--border-color)'
-                  }}>
-                    <InfinityIcon size={32} style={{ color: 'var(--accent-blue)' }} />
-                  </div>
-                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)', opacity: 0.7, textAlign: 'center' }}>
-                    로그인이 필요합니다
+              <>
+                <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                  <h2 className="hello-greeting">
+                    Hello, Captain
+                  </h2>
+                  <p style={{ color: 'var(--text-secondary)', marginTop: '8px', fontSize: '14px' }}>
+                    How can I facilitate your coding journey?
                   </p>
                 </div>
-              )}
+                {renderInputArea()}
+              </>
             </div>
           </div>
         ) : (

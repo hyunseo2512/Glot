@@ -123,21 +123,6 @@ contextBridge.exposeInMainWorld('electron', {
     },
   },
 
-  // 인증 이벤트
-  auth: {
-    onSuccess: (callback: (token: string) => void) => {
-      const listener = (_event: any, { token }: any) => callback(token);
-      ipcRenderer.on('auth:success', listener);
-      return () => ipcRenderer.removeListener('auth:success', listener);
-    },
-    verify: (token: string, backendUrl: string) => ipcRenderer.invoke('auth:verify', token, backendUrl),
-    login: (backendUrl: string, username: string, password: string) => ipcRenderer.invoke('auth:login', backendUrl, username, password),
-    register: (backendUrl: string, email: string, password: string, fullName: string) => ipcRenderer.invoke('auth:register', backendUrl, email, password, fullName),
-    getUsers: (backendUrl: string, token: string) => ipcRenderer.invoke('auth:getUsers', backendUrl, token),
-    updateUserRole: (backendUrl: string, token: string, email: string, role: string) => ipcRenderer.invoke('auth:updateUserRole', backendUrl, token, email, role),
-    deleteUser: (backendUrl: string, token: string, email: string) => ipcRenderer.invoke('auth:deleteUser', backendUrl, token, email),
-  },
-
   // 쉘 기능
   shell: {
     openExternal: (url: string) => ipcRenderer.invoke('shell:openExternal', url),
@@ -305,15 +290,6 @@ declare global {
         getPath: () => Promise<string>;
         read: () => Promise<{ success: boolean; data?: object; error?: string }>;
         write: (settings: object) => Promise<{ success: boolean; error?: string }>;
-      };
-      auth: {
-        onSuccess: (callback: (token: string) => void) => () => void;
-        verify: (token: string, backendUrl: string) => Promise<{ success: boolean; user?: any; error?: string; status?: number }>;
-        login: (backendUrl: string, username: string, password: string) => Promise<{ success: boolean; data?: any; error?: string; status?: number }>;
-        register: (backendUrl: string, email: string, password: string, fullName: string) => Promise<{ success: boolean; data?: any; error?: string; status?: number }>;
-        getUsers: (backendUrl: string, token: string) => Promise<{ success: boolean; data?: any; error?: string; status?: number }>;
-        updateUserRole: (backendUrl: string, token: string, email: string, role: string) => Promise<{ success: boolean; data?: any; error?: string; status?: number }>;
-        deleteUser: (backendUrl: string, token: string, email: string) => Promise<{ success: boolean; data?: any; error?: string; status?: number }>;
       };
       shell: {
         openExternal: (url: string) => Promise<void>;

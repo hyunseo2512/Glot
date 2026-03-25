@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import { useAuthStore } from '../store/authStore';
 import '../styles/WelcomeScreen.css';
-import { FolderPlusIcon, GitIcon, ActivityIcon, UserIcon, XIcon } from './Icons';
+import { FolderPlusIcon, GitIcon, ActivityIcon, XIcon } from './Icons';
 
 interface WelcomeScreenProps {
     onOpenProject: () => void;
     onCloneRepo: () => void;
     onConnectSSH: () => void;
-    onLogin: () => void;
     isRemote?: boolean;
     remoteUser?: string;
     recents?: string[];
@@ -19,14 +17,12 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
     onOpenProject,
     onCloneRepo,
     onConnectSSH,
-    onLogin,
     isRemote = false,
     remoteUser = '',
     recents = [],
     onOpenRecent,
     onRemoveRecent
 }) => {
-    const { user } = useAuthStore();
     const containerRef = useRef<HTMLDivElement>(null);
     const [focusIndex, setFocusIndex] = useState(0);
 
@@ -87,7 +83,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
     return (
         <div className="welcome-screen" ref={containerRef} onKeyDown={handleKeyDown}>
             <div className="welcome-content">
-                <div className={`welcome-logo ${user?.role === 'root' ? 'root' : ''}`}>
+                <div className="welcome-logo">
                     <h1>Glot</h1>
                     <span className="welcome-version">Pro • v0.1.0</span>
                 </div>

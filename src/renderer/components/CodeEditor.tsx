@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAuthStore } from '../store/authStore';
 import { OpenFile } from '../types/file';
 import Editor, { DiffEditor, useMonaco, loader } from '@monaco-editor/react';
 import '../styles/CodeEditor.css';
@@ -296,7 +295,6 @@ function CodeEditor({
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [forceOpenBinary, setForceOpenBinary] = useState<Set<string>>(new Set());
   const [markdownPreview, setMarkdownPreview] = useState(false);
-  const { user } = useAuthStore();
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
   const activeFile = activeFileIndex >= 0 ? openFiles[activeFileIndex] : null;
@@ -976,7 +974,7 @@ function CodeEditor({
           <div className="editor-empty-state">
             {/* Logo */}
             <div className="empty-logo">
-              <span className={`logo-text ${user?.role === 'root' ? 'root' : ''}`}>Glot</span>
+              <span className="logo-text">Glot</span>
               <span className="logo-edition">Pro Edition</span>
             </div>
 
