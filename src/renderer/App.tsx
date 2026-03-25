@@ -16,7 +16,6 @@ import {
   SidebarLeftIcon, LayoutBottomIcon, SidebarRightIcon,
   RotateCcwIcon,
   RotateCwIcon,
-  ChevronDownIcon,
   ErrorIcon,
   WarningIcon,
   BugIcon,
@@ -36,156 +35,11 @@ import InAppFileBrowser, { FileBrowserMode } from './components/InAppFileBrowser
  */
 // OpenFile interface moved to types/file.ts
 
-// LoginModal import removed
-
-// 인증 상태 컴포넌트
-const AuthStatus = () => {
-  const [user, setUser] = useState<any>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Zustand store 구독
-    import('./store/authStore').then(({ useAuthStore }) => {
-      // 초기값 설정
-      setUser(useAuthStore.getState().user);
-
-      // 상태 변경 구독
-      const unsubscribe = useAuthStore.subscribe((state) => {
-        console.log('👤 User state updated:', state.user);
-        setUser(state.user);
-      });
-      return () => unsubscribe();
-    });
-  }, []);
-
-  // 외부 클릭 시 드롭다운 닫기
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  if (!user) {
-    return (
-      <button
-        onClick={async () => {
-          const { useAuthStore } = await import('./store/authStore');
-          useAuthStore.getState().openLoginModal();
-        }}
-        className="header-icon-button"
-        style={{
-          background: 'none',
-          border: 'none',
-          color: '#cccccc',
-          cursor: 'pointer',
-          padding: '0',
-          height: '32px',
-          boxSizing: 'border-box',
-          gap: '4px',
-          paddingLeft: '4px',
-          paddingRight: '0px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        <div style={{
-          width: '16px',
-          height: '16px',
-          borderRadius: '50%',
-          background: '#3c3c3c',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          lineHeight: 0
-        }}>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </div>
-        <div style={{ opacity: 0.5, display: 'flex', alignItems: 'center', paddingTop: '2px' }}>
-          <ChevronDownIcon size={18} />
-        </div>
-      </button>
-    );
-  }
-
-  return (
-    <div style={{ position: 'relative' }} ref={dropdownRef}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '4px',
-          cursor: 'pointer',
-          height: '32px',
-          boxSizing: 'border-box',
-          gap: '4px', // 아이콘과 꺽쇠 사이 간격 증가
-          paddingLeft: '4px',
-          paddingRight: '0px' // 오른쪽 패딩 제거
-        }}
-        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-      >
-        <div style={{
-          width: '16px',
-          height: '16px',
-          borderRadius: '50%',
-          // 역할 기반 색상 (네온 글로우)
-          background: user.role === 'root' ? 'linear-gradient(135deg, #b957ce, #57b9ce)' : // Root -> 네온 퍼플 + 블루 그라데이션
-            user.role === 'subscriber' ? '#2980b9' :
-              '#8e44ad', // 사용자 -> 보라색
-          boxShadow: user.role === 'root' ? '0 0 8px #b957ce' :
-            user.role === 'subscriber' ? '0 0 6px #2980b9' :
-              '0 0 6px #8e44ad',
-          transition: 'all 0.3s ease',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          {/* Text Removed */}
-        </div>
-        <div style={{ opacity: 0.5, display: 'flex', alignItems: 'center', paddingTop: '2px' }}>
-          <ChevronDownIcon size={18} />
-        </div>
-      </div>
-
-      {isDropdownOpen && (
-        <div className="profile-dropdown-menu">
-          <div className="profile-dropdown-header">
-            <div className="profile-name">{user.full_name || 'User'}</div>
-            <div className="profile-email">{user.email}</div>
-          </div>
-
-          <button
-            onClick={async () => {
-              const { useAuthStore } = await import('./store/authStore');
-              useAuthStore.getState().logout();
-              setIsDropdownOpen(false);
-            }}
-            className="profile-dropdown-item"
-          >
-            Sign Out
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
-
 import { EditorSettings, DEFAULT_EDITOR_SETTINGS } from './types/settings';
 
 // ... (existing imports)
 
 import { GlobalTooltip } from './components/GlobalTooltip';
-import { LoginScreen } from './components/LoginScreen';
-import { useAuthStore } from './store/authStore';
 import CommandPalette from './components/CommandPalette';
 import { useCommandStore } from './store/commandStore'; // Added this import for useAuthStore
 
@@ -194,7 +48,6 @@ import EditorPane from './components/EditorPane';
 import UpdateBanner from './components/UpdateBanner';
 
 function App() {
-  const isLoginModalOpen = useAuthStore((state) => state.isLoginModalOpen);
   const [sidebarView, setSidebarView] = useState<'explorer' | 'search' | 'git' | 'debug'>('explorer');
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
 
@@ -235,12 +88,8 @@ function App() {
     }
   };
 
-  // 초기 설정 및 인증 확인
+  // 초기 설정 로드
   useEffect(() => {
-    // 동적 import로 순환 참조 방지 (필요 시) 또는 직접 import
-    import('./store/authStore').then(({ useAuthStore }) => {
-      useAuthStore.getState().checkAuth();
-    });
     loadEditorSettings();
   }, []);
 
@@ -1285,7 +1134,13 @@ function App() {
         case 'openFile': {
           (async () => {
             try {
-              const filePath = await showFileBrowser('selectFile');
+              // OS 파일 관리자 사용
+              const result = await window.electron.dialog.openFile();
+              const filePath = result.success && result.path ? result.path : null;
+
+              // [GLOT_FILEBROWSER] 기존 Glot 전용 파일 브라우저 코드 (주석 처리)
+              // const filePath = await showFileBrowser('selectFile');
+
               if (!filePath) return;
               // 이미 열려있으면 활성화
               const existingIdx = openFiles.findIndex(f => f.path === filePath);
@@ -1489,16 +1344,31 @@ function App() {
   // 폴더 열기 핸들러
   const handleOpenFolder = async () => {
     try {
-      const remoteInitialPath = isRemoteWorkspace
-        ? (workspaceDir || (remoteUser ? `/home/${remoteUser}` : '/'))
-        : undefined;
-      const selectedPath = await showFileBrowser('selectFolder', isRemoteWorkspace, remoteInitialPath);
-      if (selectedPath) {
-        setWorkspaceDir(selectedPath);
-        setIsSidePanelOpen(true);
-        if (!isRemoteWorkspace) {
-          addToRecents(selectedPath);
+      // 원격 워크스페이스는 기존 InAppFileBrowser 유지
+      if (isRemoteWorkspace) {
+        // [GLOT_FILEBROWSER] 원격 파일 브라우저 (SFTP)
+        const remoteInitialPath = workspaceDir || (remoteUser ? `/home/${remoteUser}` : '/');
+        const selectedPath = await showFileBrowser('selectFolder', true, remoteInitialPath);
+        if (selectedPath) {
+          setWorkspaceDir(selectedPath);
+          setIsSidePanelOpen(true);
         }
+      } else {
+        // 로컬: OS 파일 관리자 사용
+        const result = await window.electron.dialog.openDirectory();
+        if (result.success && result.path) {
+          setWorkspaceDir(result.path);
+          setIsSidePanelOpen(true);
+          addToRecents(result.path);
+        }
+
+        // [GLOT_FILEBROWSER] 기존 Glot 전용 파일 브라우저 코드 (주석 처리)
+        // const selectedPath = await showFileBrowser('selectFolder', false, undefined);
+        // if (selectedPath) {
+        //   setWorkspaceDir(selectedPath);
+        //   setIsSidePanelOpen(true);
+        //   addToRecents(selectedPath);
+        // }
       }
     } catch (error) {
       console.error('Failed to open folder:', error);
@@ -1598,16 +1468,6 @@ function App() {
     }
     setFileMenuOpen(false);
   };
-  // 로그인 핸들러
-  const handleLogin = async () => {
-    try {
-      const { useAuthStore } = await import('./store/authStore');
-      useAuthStore.getState().login();
-    } catch (error) {
-      console.error('Failed to login:', error);
-    }
-  };
-
   // SSH 연결 핸들러
   const handleSSHConnect = async (config: any) => {
     try {
@@ -2031,10 +1891,6 @@ function App() {
             <SettingsIcon size={18} />
           </button>
           <div className="window-controls">
-            {/* 로그인 상태 표시 (Window Controls 왼쪽) */}
-            <div style={{ display: 'flex', alignItems: 'center', marginRight: '0px' }}>
-              <AuthStatus />
-            </div>
             <button
               className="window-button minimize"
               onClick={() => window.electron.window.minimize()}
@@ -2237,7 +2093,7 @@ function App() {
         {/* 중앙 에디터 영역 및 터미널 (수직 배치) */}
         <div className="main-content-column" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-          {/* 상단 뷰 (WelcomeScreen 또는 CodeEditor 또는 LoginScreen) */}
+          {/* 상단 뷰 (WelcomeScreen 또는 CodeEditor) */}
           <div style={{
             flex: 1,
             overflow: 'hidden',
@@ -2245,9 +2101,7 @@ function App() {
             flexDirection: 'column',
             minHeight: 0 // Allow shrinking
           }}>
-            {isLoginModalOpen ? (
-              <LoginScreen />
-            ) : (!workspaceDir && primaryFiles.length === 0 && secondaryFiles.length === 0 && !isSplitView) || forceShowWelcome ? (
+            {(!workspaceDir && primaryFiles.length === 0 && secondaryFiles.length === 0 && !isSplitView) || forceShowWelcome ? (
               <WelcomeScreen
                 onOpenProject={() => {
                   setForceShowWelcome(false);
@@ -2267,7 +2121,6 @@ function App() {
                 }}
                 isRemote={isRemoteWorkspace}
                 remoteUser={remoteUser}
-                onLogin={handleLogin}
                 recents={recentProjects}
                 onOpenRecent={handleOpenRecent}
                 onRemoveRecent={handleRemoveRecent}
