@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:main\" \"npm run dev:renderer\"",
-    "dev:main": "tsc -p tsconfig.main.json && electron . --no-sandbox --ignore-certificate-errors --ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime",
+    "dev:main": "tsc -p tsconfig.main.json && electron . --no-sandbox --ignore-certificate-errors --ozone-platform=x11",
     "dev:renderer": "vite",
     "build": "npm run build:main && npm run build:renderer",
     "build:main": "tsc -p tsconfig.main.json",
@@ -55,8 +55,8 @@
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.24",
     "concurrently": "^8.2.2",
-    "electron": "^28.3.3",
-    "electron-builder": "^24.9.1",
+    "electron": "^32.0.0",
+    "electron-builder": "^25.1.8",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
     "postcss": "^8.5.6",
@@ -92,9 +92,7 @@
         "rpm"
       ],
       "executableArgs": [
-        "--ozone-platform-hint=auto",
-        "--enable-features=WaylandWindowDecorations",
-        "--enable-wayland-ime"
+        "--ozone-platform=x11"
       ],
       "maintainer": "zxcvne <zxcvne@localhost>",
       "category": "Development",

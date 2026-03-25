@@ -3,6 +3,11 @@ import path from 'path';
 import { pythonService } from './services/pythonService';
 import { linterService } from './services/LinterService';
 
+// Linux IME 호환성 설정 (XWayland 모드 + XIM 프로토콜로 fcitx5 한글 입력 지원)
+if (process.platform === 'linux') {
+  app.commandLine.appendSwitch('ozone-platform', 'x11'); // XWayland 강제 → XIM 경로로 fcitx5 동작
+}
+
 // 개발 환경 여부 확인
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
@@ -84,8 +89,8 @@ function createWindow(): void {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      webSecurity: false, // [CRITICAL] Disable CORS for remote API
-      allowRunningInsecureContent: true,
+      webSecurity: false, // [CRITICAL] Disable CORS for remote API (E32에서 deprecated 경고 있으나 동작함)
+
     },
     backgroundColor: '#1e1e1e',
     show: false, // 준비될 때까지 숨김
@@ -1490,92 +1495,20 @@ app.whenReady().then(() => {
     }
   });
 
-  // [CRITICAL] 프로토콜 핸들러 등록 (Linux/Windows에서 필수)
-  if (!app.isDefaultProtocolClient('glot')) {
-    const args = [];
-    if (process.argv.length > 1) {
-      args.push(path.resolve(process.argv[1]));
-    }
-    app.setAsDefaultProtocolClient('glot', process.execPath, args);
-  }
-
-  // [Fix] Windows/Linux: 앱 시작 시 인자로 넘어온 URL 처리 (Primary Instance)
-  if (process.platform !== 'darwin') {
-    const url = process.argv.find(arg => arg.startsWith('glot://'));
-    if (url) {
-      console.log('🚀 Startup Deep Link Found:', url);
-      // 윈도우가 준비될 때까지 잠시 대기
-      setTimeout(() => handleDeepLink(url), 1000);
-    }
-  }
 });
 
-// Windows/Linux 딥링킹 처리 (Second Instance)
+// Single Instance Lock (prevent multiple app instances)
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
-    // 사용자가 두 번째 인스턴스를 열려고 하면 메인 윈도우에 포커스
-    // 사용자가 두 번째 인스턴스를 열려고 하면 첫 번째 윈도우에 포커스
+  app.on('second-instance', (_event, _commandLine, _workingDirectory) => {
     const win = BrowserWindow.getAllWindows()[0];
     if (win) {
       if (win.isMinimized()) win.restore();
       win.focus();
     }
-
-    // glot:// 프로토콜 처리 (Windows/Linux)
-    const url = commandLine.find(arg => arg.startsWith('glot://'));
-    if (url) {
-      handleDeepLink(url);
-    }
   });
-}
-
-// macOS 딥링킹 처리
-app.on('open-url', (event, url) => {
-  event.preventDefault();
-  handleDeepLink(url);
-});
-
-// 딥링킹 URL 파싱 및 처리
-function handleDeepLink(url: string) {
-  console.log('🔗 Deep link received:', url);
-  const logFile = '/tmp/glot_main.log';
-  try {
-    require('fs').appendFileSync(logFile, `[DeepLink] Received: ${url}\n`);
-  } catch (e) { }
-
-  try {
-    const urlObj = new URL(url);
-
-    // glot://auth?token=...
-    if (urlObj.host === 'auth') {
-      const token = urlObj.searchParams.get('token');
-      if (token) {
-        console.log('🔑 Token received via deep link');
-        require('fs').appendFileSync(logFile, `[DeepLink] Token extracted. Broadcasting...\n`);
-
-        // 토큰 저장 (ipcMain handler가 이미 store를 초기화했지만, 여기서도 store 인스턴스 접근 필요)
-        // 주의: setupIpcHandlers 내부의 store 변수는 지역변수이므로 접근 불가.
-        // store를 전역 또는 모듈 레벨로 빼거나, 여기서 새로 인스턴스 생성.
-        const Store = require('electron-store');
-        const store = new Store();
-        store.set('token', token);
-
-        // 렌더러에 알림
-        // 렌더러에 알림 (모든 윈도우에 전송)
-        BrowserWindow.getAllWindows().forEach(win => {
-          win.webContents.send('auth:success', { token });
-        });
-      } else {
-        require('fs').appendFileSync(logFile, `[DeepLink] No token found in URL.\n`);
-      }
-    }
-  } catch (error: any) {
-    console.error('Failed to handle deep link:', error);
-    require('fs').appendFileSync(logFile, `[DeepLink] Error: ${error.message}\n`);
-  }
 }
 
 // --- Chat Stream Proxy (Bypass Renderer CORS/SSL) ---
@@ -1642,140 +1575,6 @@ ipcMain.handle('chat:stream-stop', (event, streamId: string) => {
   }
   return { success: true };
 });
-
-// --- Auth Verification Handler ---
-ipcMain.handle('auth:verify', async (_event, token: string, backendUrl: string) => {
-  const axios = require('axios');
-  const https = require('https');
-
-  try {
-    const agent = new https.Agent({
-      rejectUnauthorized: false, // [CRITICAL] Self-signed 인증서 허용
-      keepAlive: true
-    });
-
-    console.log(`🔐 Verifying token with backend: ${backendUrl}`);
-
-    const response = await axios.get(`${backendUrl}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-      httpsAgent: agent, // Node.js 환경에서는 여기서 agent 설정 가능
-      timeout: 5000
-    });
-
-    return { success: true, user: response.data };
-  } catch (error: any) {
-    console.error('Auth verification failed in Main:', error.message);
-    const status = error.response ? error.response.status : null;
-    return { success: false, error: error.message, status };
-  }
-});
-
-// --- Auth Login Handler (IPC Proxy) ---
-ipcMain.handle('auth:login', async (_event, backendUrl: string, username: string, password: string) => {
-  const axios = require('axios');
-  try {
-    console.log(`🔑 Login attempt to: ${backendUrl}`);
-    const response = await axios.post(`${backendUrl}/auth/token`,
-      new URLSearchParams({ username, password }).toString(),
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, timeout: 5000 }
-    );
-    return { success: true, data: response.data };
-  } catch (error: any) {
-    console.error('Login failed in Main:', error.message);
-    const detail = error.response?.data?.detail || error.message;
-    return { success: false, error: detail, status: error.response?.status };
-  }
-});
-
-// --- Auth Register Handler (IPC Proxy) ---
-ipcMain.handle('auth:register', async (_event, backendUrl: string, email: string, password: string, fullName: string) => {
-  const axios = require('axios');
-  try {
-    console.log(`📝 Register attempt to: ${backendUrl}`);
-    const response = await axios.post(`${backendUrl}/auth/register`,
-      { email, password, full_name: fullName },
-      { headers: { 'Content-Type': 'application/json' }, timeout: 5000 }
-    );
-    return { success: true, data: response.data };
-  } catch (error: any) {
-    console.error('Register failed in Main:', error.message);
-    const detail = error.response?.data?.detail || error.message;
-    return { success: false, error: detail, status: error.response?.status };
-  }
-});
-
-// --- Member Management Handlers (IPC Proxy) ---
-ipcMain.handle('auth:getUsers', async (_event, backendUrl: string, token: string) => {
-  const axios = require('axios');
-  const https = require('https');
-  try {
-    const agent = new https.Agent({
-      rejectUnauthorized: false,
-      keepAlive: true
-    });
-
-    console.log(`👥 Fetching users from: ${backendUrl}`);
-    const response = await axios.get(`${backendUrl}/users`, {
-      headers: { Authorization: `Bearer ${token}` },
-      httpsAgent: agent,
-      timeout: 5000
-    });
-    return { success: true, data: response.data };
-  } catch (error: any) {
-    console.error('Fetch users failed in Main:', error.message);
-    const detail = error.response?.data?.detail || error.message;
-    return { success: false, error: detail, status: error.response?.status };
-  }
-});
-
-ipcMain.handle('auth:updateUserRole', async (_event, backendUrl: string, token: string, email: string, role: string) => {
-  const axios = require('axios');
-  const https = require('https');
-  try {
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    });
-
-    console.log(`👑 Updating role for ${email} to ${role}`);
-    const response = await axios.put(`${backendUrl}/users/${email}/role`,
-      { role },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        httpsAgent: agent,
-        timeout: 5000
-      }
-    );
-    return { success: true, data: response.data };
-  } catch (error: any) {
-    console.error('Update role failed in Main:', error.message);
-    const detail = error.response?.data?.detail || error.message;
-    return { success: false, error: detail, status: error.response?.status };
-  }
-});
-
-ipcMain.handle('auth:deleteUser', async (_event, backendUrl: string, token: string, email: string) => {
-  const axios = require('axios');
-  const https = require('https');
-  try {
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    });
-
-    console.log(`❌ Deleting user ${email} at ${backendUrl}`);
-    const response = await axios.delete(`${backendUrl}/users/${email}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      httpsAgent: agent,
-      timeout: 5000
-    });
-    return { success: true, data: response.data };
-  } catch (error: any) {
-    console.error('Delete user failed in Main:', error.message);
-    const detail = error.response?.data?.detail || error.message;
-    return { success: false, error: detail, status: error.response?.status };
-  }
-});
-
-// 여기서는 로직이 격리되어 있으므로 패스.
 
 /**
  * 모든 윈도우가 닫혔을 때
