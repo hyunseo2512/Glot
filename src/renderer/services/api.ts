@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
 import { EdenResponse, ModelInfo, ApiError } from '../types';
-import { useAuthStore } from '../store/authStore';
 
 /**
  * Quark API 클라이언트 (구 EdenApi)
@@ -19,23 +18,6 @@ class QuarkApi {
       },
     });
 
-    // Request Interceptor: Auth Token Injection
-    this.client.interceptors.request.use(async (config) => {
-      // 1. Dynamic Base URL Check
-      const storeUrl = useAuthStore.getState().backendUrl;
-      if (storeUrl && config.baseURL !== storeUrl) {
-        config.baseURL = storeUrl;
-      }
-
-      // 2. Token Injection
-      const token = useAuthStore.getState().token;
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    }, (error) => {
-      return Promise.reject(error);
-    });
   }
 
   /**
@@ -84,8 +66,19 @@ class QuarkApi {
     systemPrompt?: string,
     history?: any[]
   ): AsyncGenerator<string, void, unknown> {
-    const storeUrl = useAuthStore.getState().backendUrl || this.baseURL;
-    const token = useAuthStore.getState().token;
+    // electron-store에서 URL과 API Key를 동적으로 읽기 (재시작 없이 반영)
+    let storeUrl = this.baseURL;
+    let apiKeyHeader: string | null = null;
+    if (window.electron && window.electron.store) {
+      const urlResult = await window.electron.store.get('ai_core_url');
+      if (urlResult.success && urlResult.value) {
+        storeUrl = String(urlResult.value).replace(/\/$/, '');
+      }
+      const keyResult = await window.electron.store.get('ai_api_key');
+      if (keyResult.success && keyResult.value) {
+        apiKeyHeader = String(keyResult.value).trim() || null;
+      }
+    }
 
     // Check if running in Electron with IPC available
     if (window.electron && window.electron.chat) {
@@ -99,9 +92,9 @@ class QuarkApi {
         system_prompt: systemPrompt,
         history
       };
-      const headers = {
+      const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        ...(apiKeyHeader ? { 'Authorization': `Bearer ${apiKeyHeader}` } : {}),
       };
 
       try {
@@ -185,7 +178,7 @@ class QuarkApi {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            ...(apiKeyHeader ? { 'Authorization': `Bearer ${apiKeyHeader}` } : {}),
           },
           body: JSON.stringify({
             message,
