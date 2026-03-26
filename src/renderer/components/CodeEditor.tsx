@@ -866,6 +866,7 @@ function CodeEditor({
                     <MarkdownPreview
                       content={debouncedContent}
                       fileName={activeFile.path.split('/').pop()}
+                      workspaceDir={workspaceDir}
                     />
                   </div>
                 )}
