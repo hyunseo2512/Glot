@@ -1,4 +1,9 @@
 /**
+ * AI 프로바이더 타입
+ */
+export type AIProvider = 'anthropic' | 'gemini' | 'openai' | 'local';
+
+/**
  * 채팅 메시지 타입
  */
 export interface ChatMessage {

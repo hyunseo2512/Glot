@@ -1,291 +1,279 @@
-import axios, { AxiosInstance } from 'axios';
-import { EdenResponse, ModelInfo, ApiError } from '../types';
+import { AIProvider, ApiError, EdenResponse, ModelInfo } from '../types';
 
-/**
- * Quark API 클라이언트 (구 EdenApi)
- */
+// 프로바이더별 기본 모델
+export const DEFAULT_MODELS: Record<AIProvider, string> = {
+  anthropic: 'claude-opus-4-5',
+  gemini: 'gemini-2.0-flash',
+  openai: 'gpt-4o',
+  local: 'llama3',
+};
+
+// 프로바이더별 모델 목록 (선택용)
+export const PROVIDER_MODELS: Record<AIProvider, string[]> = {
+  anthropic: ['claude-opus-4-5', 'claude-sonnet-4-5', 'claude-haiku-4-5', 'claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022'],
+  gemini: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro', 'gemini-1.5-flash'],
+  openai: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo', 'o1', 'o1-mini'],
+  local: [],
+};
+
+// 스토어에서 프로바이더 설정 읽기
+async function readProviderConfig(): Promise<{
+  provider: AIProvider;
+  apiKey: string;
+  model: string;
+  baseUrl: string;
+}> {
+  const defaults = { provider: 'anthropic' as AIProvider, apiKey: '', model: '', baseUrl: 'http://localhost:11434' };
+  if (!(window.electron && window.electron.store)) return defaults;
+
+  const p = await window.electron.store.get('ai_provider');
+  const provider: AIProvider = (p.success && p.value ? String(p.value) : 'anthropic') as AIProvider;
+
+  const k = await window.electron.store.get(`ai_${provider}_key`);
+  const apiKey = k.success && k.value ? String(k.value).trim() : '';
+
+  const m = await window.electron.store.get(`ai_${provider}_model`);
+  const model = m.success && m.value ? String(m.value).trim() : DEFAULT_MODELS[provider];
+
+  const u = await window.electron.store.get('ai_local_url');
+  const baseUrl = u.success && u.value ? String(u.value).replace(/\/$/, '') : 'http://localhost:11434';
+
+  return { provider, apiKey, model, baseUrl };
+}
+
+// SSE 청크에서 텍스트 추출 (프로바이더별 파싱)
+function extractText(provider: AIProvider, data: any): string | null {
+  try {
+    switch (provider) {
+      case 'anthropic':
+        if (data.type === 'content_block_delta' && data.delta?.type === 'text_delta') {
+          return data.delta.text ?? null;
+        }
+        return null;
+      case 'gemini':
+        return data.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
+      case 'openai':
+      case 'local':
+        return data.choices?.[0]?.delta?.content ?? null;
+      default:
+        return null;
+    }
+  } catch {
+    return null;
+  }
+}
+
+// 프로바이더별 요청 빌드
+function buildRequest(
+  provider: AIProvider,
+  apiKey: string,
+  model: string,
+  baseUrl: string,
+  message: string,
+  systemPrompt?: string,
+  history?: any[]
+): { url: string; body: any; headers: Record<string, string> } {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+  // history + current message 조합
+  const prior = (history || []).filter((m: any) => m.role === 'user' || m.role === 'assistant');
+
+  switch (provider) {
+    case 'anthropic': {
+      const messages = [
+        ...prior.map((m: any) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+        { role: 'user' as const, content: message },
+      ];
+      headers['x-api-key'] = apiKey;
+      headers['anthropic-version'] = '2023-06-01';
+      return {
+        url: 'https://api.anthropic.com/v1/messages',
+        headers,
+        body: {
+          model,
+          messages,
+          max_tokens: 8192,
+          stream: true,
+          ...(systemPrompt ? { system: systemPrompt } : {}),
+        },
+      };
+    }
+
+    case 'gemini': {
+      const contents = [
+        ...prior.map((m: any) => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: m.content }],
+        })),
+        { role: 'user', parts: [{ text: message }] },
+      ];
+      return {
+        url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?key=${apiKey}&alt=sse`,
+        headers,
+        body: {
+          contents,
+          ...(systemPrompt ? { systemInstruction: { parts: [{ text: systemPrompt }] } } : {}),
+        },
+      };
+    }
+
+    case 'openai': {
+      headers['Authorization'] = `Bearer ${apiKey}`;
+      const messages: any[] = [];
+      if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
+      messages.push(...prior.map((m: any) => ({ role: m.role, content: m.content })));
+      messages.push({ role: 'user', content: message });
+      return {
+        url: 'https://api.openai.com/v1/chat/completions',
+        headers,
+        body: { model, messages, stream: true },
+      };
+    }
+
+    case 'local': {
+      const messages: any[] = [];
+      if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
+      messages.push(...prior.map((m: any) => ({ role: m.role, content: m.content })));
+      messages.push({ role: 'user', content: message });
+      return {
+        url: `${baseUrl}/v1/chat/completions`,
+        headers,
+        body: { model, messages, stream: true },
+      };
+    }
+
+    default:
+      throw new Error(`Unknown provider: ${provider}`);
+  }
+}
+
 class QuarkApi {
-  private client: AxiosInstance;
-  private baseURL: string;
-
-  constructor(baseURL: string = 'http://100.110.157.32:9000') {
-    this.baseURL = baseURL;
-    this.client = axios.create({
-      baseURL,
-      timeout: 30000,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-  }
-
   /**
-   * 서버 상태 확인
-   */
-  async checkHealth(): Promise<boolean> {
-    try {
-      const response = await this.client.get('/health');
-      return response.status === 200;
-    } catch (error) {
-      console.error('Health check failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * LLM 채팅 요청 (단발성)
-   */
-  async chat(
-    message: string,
-    model: string = 'Quark-v2',
-    stream: boolean = false
-  ): Promise<EdenResponse> {
-    try {
-      const response = await this.client.post<EdenResponse>('/chat', {
-        message,
-        model,
-        stream,
-      });
-      return response.data;
-    } catch (error) {
-      throw this.handleError(error);
-    }
-  }
-
-  /**
-   * LLM 채팅 요청 (스트리밍)
-   * Async Generator를 사용하여 스트리밍 데이터를 반환
+   * LLM 채팅 스트리밍 — 설정된 프로바이더로 직접 연결
    */
   async *chatStream(
     message: string,
-    model: string = 'Quark-v2',
+    _model?: string,
     signal?: AbortSignal,
-    mode?: string,
-    cwd?: string,
+    _mode?: string,
+    _cwd?: string,
     systemPrompt?: string,
     history?: any[]
   ): AsyncGenerator<string, void, unknown> {
-    // electron-store에서 URL과 API Key를 동적으로 읽기 (재시작 없이 반영)
-    let storeUrl = this.baseURL;
-    let apiKeyHeader: string | null = null;
-    if (window.electron && window.electron.store) {
-      const urlResult = await window.electron.store.get('ai_core_url');
-      if (urlResult.success && urlResult.value) {
-        storeUrl = String(urlResult.value).replace(/\/$/, '');
-      }
-      const keyResult = await window.electron.store.get('ai_api_key');
-      if (keyResult.success && keyResult.value) {
-        apiKeyHeader = String(keyResult.value).trim() || null;
-      }
+    const { provider, apiKey, model, baseUrl } = await readProviderConfig();
+
+    if (!apiKey && provider !== 'local') {
+      throw new Error(`${provider} API Key가 설정되지 않았습니다. 설정(Connection)에서 API Key를 입력해주세요.`);
     }
 
-    // Check if running in Electron with IPC available
+    const { url, body, headers } = buildRequest(provider, apiKey, model, baseUrl, message, systemPrompt, history);
+
+    // Electron IPC 경로 (CORS 우회)
     if (window.electron && window.electron.chat) {
       const streamId = Date.now().toString() + Math.random().toString(36).substring(7);
-      const url = `${storeUrl}/chat/stream`;
-      const body = {
-        message,
-        model,
-        mode,
-        cwd,
-        system_prompt: systemPrompt,
-        history
-      };
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        ...(apiKeyHeader ? { 'Authorization': `Bearer ${apiKeyHeader}` } : {}),
-      };
+      const queue: string[] = [];
+      let isDone = false;
+      let streamError: any = null;
+
+      const offData = window.electron.chat.onData((sid, data) => {
+        if (sid === streamId) queue.push(data);
+      });
+      const offEnd = window.electron.chat.onEnd((sid) => {
+        if (sid === streamId) isDone = true;
+      });
+      const offError = window.electron.chat.onError((sid, err) => {
+        if (sid === streamId) { streamError = err; isDone = true; }
+      });
 
       try {
-        // Setup listeners before starting
-        let resolveQueue: Function;
-        const queue: any[] = [];
-        let isDone = false;
-        let error: any = null;
-
-        const offData = window.electron.chat.onData((sid, data) => {
-          if (sid === streamId) queue.push({ type: 'data', value: data });
-        });
-        const offEnd = window.electron.chat.onEnd((sid) => {
-          if (sid === streamId) { isDone = true; } // Queue might still have data
-        });
-        const offError = window.electron.chat.onError((sid, err) => {
-          if (sid === streamId) { error = err; isDone = true; }
-        });
-
-        // Start Stream
         const startResult = await window.electron.chat.startStream(streamId, url, body, headers);
         if (!startResult.success) {
-          throw new Error(startResult.error || 'Failed to start stream proxy');
+          throw new Error(startResult.error || 'Failed to start stream');
         }
 
-        // Handle AbortSignal
         if (signal) {
-          signal.addEventListener('abort', () => {
-            window.electron.chat.stopStream(streamId);
-          });
+          signal.addEventListener('abort', () => window.electron.chat.stopStream(streamId));
         }
 
-        // Generator Loop
         while (true) {
-          // If we have items in queue, yield them
           if (queue.length > 0) {
-            const items = [...queue];
-            queue.length = 0; // clear
-            for (const item of items) {
-              // Parse Logic Copied from previous impl
-              const lines = item.value.split('\n');
-              for (const line of lines) {
+            const items = queue.splice(0);
+            for (const raw of items) {
+              for (const line of raw.split('\n')) {
                 const trimmed = line.trim();
-                if (!trimmed || !trimmed.startsWith('data: ')) continue;
+                if (!trimmed.startsWith('data: ')) continue;
                 const dataStr = trimmed.slice(6);
-                if (dataStr === '[DONE]') return;
-
+                if (dataStr === '[DONE]') { offData(); offEnd(); offError(); return; }
                 try {
-                  const data = JSON.parse(dataStr);
-                  if (data.error) throw new Error(data.error);
-                  if (data.content !== undefined) yield data.content;
-                } catch (e) { /* ignore parse error for partial chunks */ }
+                  const parsed = JSON.parse(dataStr);
+                  if (parsed.error) throw new Error(typeof parsed.error === 'string' ? parsed.error : JSON.stringify(parsed.error));
+                  const text = extractText(provider, parsed);
+                  if (text) yield text;
+                } catch (e: any) {
+                  if (e.message && !e.message.includes('JSON')) throw e;
+                }
               }
             }
           }
 
-          if (error) throw new Error(error);
-          if (isDone) {
-            // Check queue once more
-            if (queue.length === 0) break;
-            // otherwise continue to drain
-            continue;
-          }
-
-          // Simple polling or wait (implementing true async queue is complex in single function)
-          // For MVP, just wait a bit (10ms)
+          if (streamError) throw new Error(streamError);
+          if (isDone && queue.length === 0) break;
           await new Promise(r => setTimeout(r, 10));
         }
-
-        // Cleanup
+      } finally {
         offData(); offEnd(); offError();
-
-      } catch (e) {
-        throw this.handleError(e);
       }
 
     } else {
-      // Fallback to fetch (Web Mode)
-      try {
-        const response = await fetch(`${storeUrl}/chat/stream`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(apiKeyHeader ? { 'Authorization': `Bearer ${apiKeyHeader}` } : {}),
-          },
-          body: JSON.stringify({
-            message,
-            model,
-            mode,
-            cwd,
-            system_prompt: systemPrompt,
-          }),
-          signal
-        });
+      // 웹 폴백 (fetch)
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+        signal,
+      });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
-        }
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`API Error ${response.status}: ${text}`);
+      }
+      if (!response.body) throw new Error('ReadableStream not supported');
 
-        if (!response.body) throw new Error('ReadableStream not supported');
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
-
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed || !trimmed.startsWith('data: ')) continue;
-
-            const dataStr = trimmed.slice(6);
-            if (dataStr === '[DONE]') return;
-
-            try {
-              const data = JSON.parse(dataStr);
-              if (data.error) throw new Error(data.error);
-              if (data.content !== undefined) yield data.content;
-            } catch (e) {
-              console.warn('Failed to parse stream chunk:', e);
-            }
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith('data: ')) continue;
+          const dataStr = trimmed.slice(6);
+          if (dataStr === '[DONE]') return;
+          try {
+            const parsed = JSON.parse(dataStr);
+            if (parsed.error) throw new Error(typeof parsed.error === 'string' ? parsed.error : JSON.stringify(parsed.error));
+            const text = extractText(provider, parsed);
+            if (text) yield text;
+          } catch (e: any) {
+            if (e.message && !e.message.includes('JSON')) throw e;
           }
         }
-      } catch (error) {
-        throw this.handleError(error);
       }
     }
   }
 
-  /**
-   * 이미지 분석 요청 (Vision)
-   */
-  async analyzeImage(
-    imageBase64: string,
-    prompt: string = '이미지를 분석해주세요'
-  ): Promise<EdenResponse> {
-    try {
-      const response = await this.client.post<EdenResponse>('/vision/analyze-base64', {
-        image: imageBase64,
-        prompt,
-      });
-      return response.data;
-    } catch (error) {
-      throw this.handleError(error);
-    }
-  }
-
-  /**
-   * 사용 가능한 모델 목록 조회
-   */
-  async listModels(): Promise<ModelInfo[]> {
-    try {
-      const response = await this.client.get<ModelInfo[]>('/models/list');
-      return response.data;
-    } catch (error) {
-      throw this.handleError(error);
-    }
-  }
-
-  /**
-   * 에러 핸들링
-   */
-  private handleError(error: any): ApiError {
-    if (axios.isAxiosError(error)) {
-      return {
-        message: error.response?.data?.message || error.message,
-        code: error.code,
-        details: error.response?.data,
-      };
-    }
-    return {
-      message: error.message || 'Unknown error occurred',
-    };
-  }
-
-  /**
-   * Base URL 변경
-   */
-  setBaseURL(url: string): void {
-    this.baseURL = url;
-    this.client.defaults.baseURL = url;
+  /** @deprecated 직접 API 연결로 대체됨 */
+  async checkHealth(): Promise<boolean> { return false; }
+  async listModels(): Promise<ModelInfo[]> { return []; }
+  async analyzeImage(_img: string, _prompt?: string): Promise<EdenResponse> {
+    throw new Error('Not implemented');
   }
 }
 
-// 싱글톤 인스턴스 export
 export const quarkApi = new QuarkApi();
 export default quarkApi;
