@@ -397,9 +397,9 @@
 
 /* 모드별 색상 (버튼 텍스트 및 선택된 상태) - 강제 적용 */
 /* 모드별 색상 (버튼 아이콘 및 텍스트) - 강제 적용 */
-.ai-model-select.mode-ask,
-.ai-model-select.mode-ask span,
-.ai-model-select.mode-ask svg {
+.ai-model-select.mode-plan,
+.ai-model-select.mode-plan span,
+.ai-model-select.mode-plan svg {
   color: var(--accent-purple) !important;
 }
 
