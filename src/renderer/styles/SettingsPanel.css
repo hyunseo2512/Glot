@@ -401,6 +401,14 @@
   border-color: var(--accent-blue);
 }
 
+.theme-modern-dark .shortcut-key {
+  border-color: #555555 !important;
+}
+
+.theme-modern-white .shortcut-key {
+  border-color: #9AA0A8 !important;
+}
+
 .shortcut-key.editing {
   background-color: var(--accent-blue);
   border-color: var(--accent-blue);
