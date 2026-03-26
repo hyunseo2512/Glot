@@ -45,8 +45,9 @@ If you are developing software using Glot, familiarize yourself with its core ed
 
 * **Advanced Code Editor**: Built on Monaco Editor featuring syntax highlighting, auto-completion, and code formatting.
 * **Split Editor**: Edit multiple files simultaneously with horizontal/vertical split views. Toggle using `Ctrl + \`.
-* **Integrated Terminal**: Fully-featured pseudo-terminal (pty) with multi-tab support. Toggle quickly using `Ctrl + \``.
+* **Integrated Terminal**: Fully-featured pseudo-terminal (pty) with multi-tab support. Toggle quickly using `` Ctrl + ` ``.
 * **File Explorer**: Intuitive file management with drag-and-drop support and custom icons.
+* **Markdown Preview**: Live-rendered Markdown preview with full HTML support, syntax-highlighted code blocks, and local image rendering.
 
 AI Enthusiast
 -------------
@@ -62,6 +63,17 @@ System Administrator / DevOps
 
 For users deploying and managing remote systems:
 
-* **Source Control**: Built-in Git integration for stating, committing, and viewing diffs directly in the sidebar.
+* **Source Control**: Built-in Git integration for staging, committing, and viewing diffs directly in the sidebar.
 * **Remote SSH**: Connect to remote servers and intuitively edit remote configuration files directly within the local IDE.
 * **Command Palette**: Quickly search and execute commands across the workspace using `Ctrl + Shift + P`.
+
+Themes
+------
+
+Glot ships with three built-in themes optimized for all-day coding:
+
+* **Modern White**: A clean light theme with high-contrast colors for bright environments.
+* **Modern Dark**: A balanced dark theme as the default, easy on the eyes.
+* **Tokyo Night**: A stylish dark theme inspired by the iconic Tokyo Night color palette.
+
+Switch themes instantly via **Settings → Editor → Theme**.
