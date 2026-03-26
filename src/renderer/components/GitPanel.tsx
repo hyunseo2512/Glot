@@ -587,7 +587,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceDir, onFileClick }) => {
     return (
         <div className="git-panel">
             <div className="git-header">
-                <h3>소스 제어</h3>
+                <h3>SOURCE CONTROL</h3>
                 <div className="git-actions">
                     <button onClick={refreshStatus} title="새로고침" disabled={isLoading}>
                         <RotateCcwIcon size={14} />

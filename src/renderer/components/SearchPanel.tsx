@@ -66,7 +66,8 @@ function SearchPanel({ workspaceDir, onFileOpen }: SearchPanelProps) {
     return (
         <div className="search-panel">
             <div className="search-header">
-                <h3>{projectName}</h3>
+                {/* <h3>{projectName}</h3> */}
+                <h3>SEARCH</h3>
             </div>
 
             <div className="search-input-container">
