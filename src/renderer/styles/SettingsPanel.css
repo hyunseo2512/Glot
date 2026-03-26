@@ -384,34 +384,59 @@
 }
 
 .shortcut-key {
-  padding: 6px 14px;
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
+  padding: 4px 12px;
+  background-color: rgba(128, 128, 128, 0.1);
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-bottom: 2px solid rgba(128, 128, 128, 0.4);
+  border-radius: 6px;
   cursor: pointer;
   min-width: 100px;
   text-align: center;
   color: var(--text-primary);
   font-size: 12px;
-  font-family: monospace;
+  font-family: var(--font-mono, monospace);
   transition: all 0.15s;
 }
 
 .shortcut-key:hover {
+  background-color: rgba(128, 128, 128, 0.15);
   border-color: var(--accent-blue);
+  border-bottom-color: var(--accent-blue);
 }
 
-.theme-modern-dark .shortcut-key {
-  border-color: #555555 !important;
+.shortcut-key:active {
+  border-bottom-width: 1px;
+  transform: translateY(1px);
+}
+
+.theme-modern-dark .shortcut-key,
+.theme-tokyo-night .shortcut-key {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.theme-modern-dark .shortcut-key:hover,
+.theme-tokyo-night .shortcut-key:hover {
+  border-color: var(--accent-blue) !important;
+  border-bottom-color: var(--accent-blue) !important;
 }
 
 .theme-modern-white .shortcut-key {
-  border-color: #9AA0A8 !important;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.25) !important;
+}
+
+.theme-modern-white .shortcut-key:hover {
+  border-color: var(--accent-blue) !important;
+  border-bottom-color: var(--accent-blue) !important;
 }
 
 .shortcut-key.editing {
   background-color: var(--accent-blue);
-  border-color: var(--accent-blue);
+  border-color: var(--accent-blue) !important;
+  border-bottom-color: var(--accent-blue) !important;
   color: white;
   box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.25);
 }
