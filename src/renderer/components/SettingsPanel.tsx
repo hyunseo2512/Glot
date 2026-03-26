@@ -25,9 +25,9 @@ function CustomDropdown({ value, options, onChange, disabled }: { value: string,
         style={{
           padding: '6px 12px',
           borderRadius: '6px',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          background: 'rgba(255, 255, 255, 0.05)',
-          color: '#e0e0e0',
+          border: '1px solid var(--border-color)',
+          background: 'var(--bg-tertiary)',
+          color: 'var(--text-primary)',
           cursor: disabled ? 'default' : 'pointer',
           fontSize: '13px',
           backdropFilter: 'blur(4px)',
@@ -77,7 +77,7 @@ function CustomDropdown({ value, options, onChange, disabled }: { value: string,
                   background: value === opt ? 'rgba(187, 134, 252, 0.1)' : 'transparent',
                   transition: 'background 0.2s'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+                onMouseOver={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
                 onMouseOut={(e) => e.currentTarget.style.background = value === opt ? 'rgba(187, 134, 252, 0.1)' : 'transparent'}
               >
                 {opt.charAt(0).toUpperCase() + opt.slice(1)}
@@ -106,10 +106,10 @@ function NumberSpinner({ value, min, max, onChange }: { value: number, min: numb
         style={{
           width: '28px', height: '28px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(255, 255, 255, 0.05)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'var(--bg-tertiary)',
+          border: '1px solid var(--border-color)',
           borderRadius: '4px',
-          color: '#e0e0e0',
+          color: 'var(--text-primary)',
           cursor: value <= min ? 'default' : 'pointer',
           opacity: value <= min ? 0.3 : 1
         }}
@@ -121,7 +121,7 @@ function NumberSpinner({ value, min, max, onChange }: { value: number, min: numb
         minWidth: '40px',
         textAlign: 'center',
         fontSize: '14px',
-        color: '#e0e0e0',
+        color: 'var(--text-primary)',
         fontVariantNumeric: 'tabular-nums'
       }}>
         {value}
@@ -131,10 +131,10 @@ function NumberSpinner({ value, min, max, onChange }: { value: number, min: numb
         style={{
           width: '28px', height: '28px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'rgba(255, 255, 255, 0.05)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'var(--bg-tertiary)',
+          border: '1px solid var(--border-color)',
           borderRadius: '4px',
-          color: '#e0e0e0',
+          color: 'var(--text-primary)',
           cursor: value >= max ? 'default' : 'pointer',
           opacity: value >= max ? 0.3 : 1
         }}
@@ -624,7 +624,7 @@ function SettingsPanel({ onClose, onOpenSettingsJson, onApply }: SettingsPanelPr
                 </label>
                 <CustomDropdown
                   value={editorSettings.theme}
-                  options={['modern-dark', 'modern-white', 'tokyo-night']}
+                  options={['modern-white', 'modern-dark', 'tokyo-night']}
                   onChange={(val) => handleEditorSettingChange('theme', val)}
                 />
               </div>
@@ -658,7 +658,7 @@ function SettingsPanel({ onClose, onOpenSettingsJson, onApply }: SettingsPanelPr
               <div className="setting-item" style={{ justifyContent: 'flex-start' }}>
                 <button
                   className="save-button"
-                  style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}
+                  style={{ background: 'var(--bg-tertiary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
                   onClick={async () => {
                     if (onOpenSettingsJson) {
                       const settingsPath = await window.electron.settings.getPath();
@@ -751,7 +751,7 @@ function SettingsPanel({ onClose, onOpenSettingsJson, onApply }: SettingsPanelPr
               fontWeight: 500,
               transition: 'background 0.2s'
             }}
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+            onMouseOver={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
             onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
           >
             Cancel

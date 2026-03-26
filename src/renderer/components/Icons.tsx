@@ -612,12 +612,12 @@ export const TsIcon = ({ size = 16, className = '' }: IconProps) => (
 
 // JSX 아이콘
 export const JsxIcon = ({ size = 16, className = '' }: IconProps) => (
-  <SimpleIcon icon={siReact} size={size} className={className} color="#61DAFB" />
+  <SimpleIcon icon={siReact} size={size} className={className} color="var(--accent-cyan)" />
 );
 
 // TSX 아이콘
 export const TsxIcon = ({ size = 16, className = '' }: IconProps) => (
-  <SimpleIcon icon={siReact} size={size} className={className} color="#3178C6" />
+  <SimpleIcon icon={siReact} size={size} className={className} color="var(--accent-blue)" />
 );
 
 // Python 아이콘 (공식 로고 - 파란땹/노란녹)
@@ -643,7 +643,7 @@ export const JavaIcon = ({ size = 16, className = '' }: IconProps) => (
     height={size}
     viewBox="0 0 24 24"
     fill="none"
-    stroke="#EA2D2E"
+    stroke="var(--accent-red)"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -685,7 +685,7 @@ export const JsonIcon = ({ size = 16, className = '' }: IconProps) => (
     height={size}
     viewBox="0 0 24 24"
     fill="none"
-    stroke="#FFD700"
+    stroke="var(--accent-yellow)"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -718,12 +718,12 @@ export const CppIcon = ({ size = 16, className = '' }: IconProps) => (
 
 // Git/Gitignore 아이콘 (Git 로고 스타일)
 export const GitIgnoreIcon = ({ size = 16, className = '' }: IconProps) => (
-  <SimpleIcon icon={siGit} size={size} className={className} color="#F05032" />
+  <SimpleIcon icon={siGit} size={size} className={className} color="var(--accent-red)" />
 );
 
 // Gradle 아이콘
 export const GradleIcon = ({ size = 16, className = '' }: IconProps) => (
-  <SimpleIcon icon={siGradle} size={size} className={className} color="#02303A" />
+  <SimpleIcon icon={siGradle} size={size} className={className} color="var(--accent-cyan)" />
 );
 
 // Docker 아이콘
@@ -734,7 +734,7 @@ export const DockerIcon = ({ size = 16, className = '' }: IconProps) => (
 // SQL 아이콘 (Lucide - Database)
 import { Database } from 'lucide-react';
 export const SqlIcon = ({ size = 16, className = '' }: IconProps) => (
-  <Database size={size} className={className} color="#FF9800" />
+  <Database size={size} className={className} color="var(--accent-yellow)" />
 );
 export const XmlIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg
@@ -742,7 +742,7 @@ export const XmlIcon = ({ size = 16, className = '' }: IconProps) => (
     height={size}
     viewBox="0 0 24 24"
     fill="none"
-    stroke="#e34c26"
+    stroke="var(--accent-red)"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -761,7 +761,7 @@ export const SvgIcon = ({ size = 16, className = '' }: IconProps) => (
     height={size}
     viewBox="0 0 24 24"
     fill="none"
-    stroke="#ffb13b"
+    stroke="var(--accent-yellow)"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -781,7 +781,7 @@ export const PngIcon = ({ size = 16, className = '' }: IconProps) => (
     height={size}
     viewBox="0 0 24 24"
     fill="none"
-    stroke="#b957ce"
+    stroke="var(--accent-purple)"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -800,7 +800,7 @@ export const ReactIcon = ({ size = 16, className = '' }: IconProps) => (
     height={size}
     viewBox="0 0 24 24"
     fill="none"
-    stroke="#61dafb"
+    stroke="var(--accent-cyan)"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -822,7 +822,7 @@ export const ErrorIcon = ({ size = 16, className = '' }: IconProps) => (
     height={size}
     viewBox="0 0 24 24"
     fill="none"
-    stroke="#f48771"
+    stroke="var(--accent-red)"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -841,7 +841,7 @@ export const WarningIcon = ({ size = 16, className = '' }: IconProps) => (
     height={size}
     viewBox="0 0 24 24"
     fill="none"
-    stroke="#cca700"
+    stroke="var(--accent-yellow)"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -985,8 +985,8 @@ export const getIconForFile = (filename: string, size: number = 16) => {
 export const ShellIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
     <rect x="2" y="3" width="20" height="18" rx="3" fill="#2D2D2D" />
-    <path d="M6 9l3 3-3 3" stroke="#4EAA25" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 15h5" stroke="#4EAA25" strokeWidth="2" strokeLinecap="round" />
+    <path d="M6 9l3 3-3 3" stroke="var(--accent-green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M12 15h5" stroke="var(--accent-green)" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
@@ -994,85 +994,85 @@ export const ShellIcon = ({ size = 16, className = '' }: IconProps) => (
 export const AudioIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
     <rect x="3" y="3" width="18" height="18" rx="3" fill="#4A148C" opacity="0.7" />
-    <circle cx="10" cy="16" r="2.5" stroke="#CE93D8" strokeWidth="1.5" fill="none" />
-    <path d="M12.5 16V7l5 2v4" stroke="#CE93D8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="10" cy="16" r="2.5" stroke="var(--accent-purple)" strokeWidth="1.5" fill="none" />
+    <path d="M12.5 16V7l5 2v4" stroke="var(--accent-purple)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 // Python 캐시 파일 아이콘 (.pyc) — 흐린 Python
 export const PycIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M12 2C8.5 2 6 3.5 6 5.5V8h6v1H5c-2 0-3.5 1.5-3.5 3.5S3 16 5 16h1v-2.5C6 11.5 7.5 10 9.5 10H15c1.5 0 2.5-1 2.5-2.5V5.5C17.5 3.5 15 2 12 2z" fill="#546E7A" opacity="0.5" />
-    <path d="M12 22c3.5 0 6-1.5 6-3.5V16h-6v-1h7c2 0 3.5-1.5 3.5-3.5S21 8 19 8h-1v2.5c0 2-1.5 3.5-3.5 3.5H9c-1.5 0-2.5 1-2.5 2.5v2C6.5 20.5 9 22 12 22z" fill="#546E7A" opacity="0.5" />
+    <path d="M12 2C8.5 2 6 3.5 6 5.5V8h6v1H5c-2 0-3.5 1.5-3.5 3.5S3 16 5 16h1v-2.5C6 11.5 7.5 10 9.5 10H15c1.5 0 2.5-1 2.5-2.5V5.5C17.5 3.5 15 2 12 2z" fill="var(--text-dim)" opacity="0.5" />
+    <path d="M12 22c3.5 0 6-1.5 6-3.5V16h-6v-1h7c2 0 3.5-1.5 3.5-3.5S21 8 19 8h-1v2.5c0 2-1.5 3.5-3.5 3.5H9c-1.5 0-2.5 1-2.5 2.5v2C6.5 20.5 9 22 12 22z" fill="var(--text-dim)" opacity="0.5" />
   </svg>
 );
 
 // __pycache__ 디렉토리 아이콘
 export const PycacheFolderIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6z" fill="#546E7A" opacity="0.4" />
-    <path d="M10 11l2 2-2 2" stroke="#FFD54F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-    <path d="M14 15h2" stroke="#FFD54F" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6z" fill="var(--text-dim)" opacity="0.4" />
+    <path d="M10 11l2 2-2 2" stroke="var(--accent-yellow)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+    <path d="M14 15h2" stroke="var(--accent-yellow)" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
   </svg>
 );
 
 export const PycacheFolderOpenIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v1H7.5c-1.2 0-2.3.8-2.7 2L2 18V6z" fill="#546E7A" opacity="0.4" />
-    <path d="M4.8 11h16.4c.9 0 1.5.8 1.2 1.6l-2.4 7c-.2.5-.7.9-1.2.9H6.8c-.5 0-1-.3-1.2-.9l-2.4-7c-.3-.8.3-1.6 1.2-1.6z" fill="#78909C" opacity="0.4" />
-    <path d="M10 14l2 2-2 2" stroke="#FFD54F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-    <path d="M14 18h2" stroke="#FFD54F" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v1H7.5c-1.2 0-2.3.8-2.7 2L2 18V6z" fill="var(--text-dim)" opacity="0.4" />
+    <path d="M4.8 11h16.4c.9 0 1.5.8 1.2 1.6l-2.4 7c-.2.5-.7.9-1.2.9H6.8c-.5 0-1-.3-1.2-.9l-2.4-7c-.3-.8.3-1.6 1.2-1.6z" fill="var(--text-tertiary)" opacity="0.4" />
+    <path d="M10 14l2 2-2 2" stroke="var(--accent-yellow)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+    <path d="M14 18h2" stroke="var(--accent-yellow)" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
   </svg>
 );
 
 // bin 디렉토리 아이콘 (기어/실행)
 export const BinFolderIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6z" fill="#5C6BC0" opacity="0.6" />
-    <circle cx="12" cy="13" r="3" stroke="#E8EAF6" strokeWidth="1.5" fill="none" opacity="0.8" />
-    <path d="M12 9.5v1M12 15.5v1M8.8 11l.9.5M14.3 14.5l.9.5M8.8 15l.9-.5M14.3 11.5l.9-.5" stroke="#E8EAF6" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
+    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6z" fill="var(--text-dim)" opacity="0.6" />
+    <circle cx="12" cy="13" r="3" stroke="var(--text-secondary)" strokeWidth="1.5" fill="none" opacity="0.8" />
+    <path d="M12 9.5v1M12 15.5v1M8.8 11l.9.5M14.3 14.5l.9.5M8.8 15l.9-.5M14.3 11.5l.9-.5" stroke="var(--text-secondary)" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
   </svg>
 );
 
 export const BinFolderOpenIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v1H7.5c-1.2 0-2.3.8-2.7 2L2 18V6z" fill="#5C6BC0" opacity="0.6" />
-    <path d="M4.8 11h16.4c.9 0 1.5.8 1.2 1.6l-2.4 7c-.2.5-.7.9-1.2.9H6.8c-.5 0-1-.3-1.2-.9l-2.4-7c-.3-.8.3-1.6 1.2-1.6z" fill="#7986CB" opacity="0.5" />
-    <circle cx="12" cy="15" r="2.5" stroke="#E8EAF6" strokeWidth="1.5" fill="none" opacity="0.7" />
+    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v1H7.5c-1.2 0-2.3.8-2.7 2L2 18V6z" fill="var(--text-dim)" opacity="0.6" />
+    <path d="M4.8 11h16.4c.9 0 1.5.8 1.2 1.6l-2.4 7c-.2.5-.7.9-1.2.9H6.8c-.5 0-1-.3-1.2-.9l-2.4-7c-.3-.8.3-1.6 1.2-1.6z" fill="var(--text-tertiary)" opacity="0.5" />
+    <circle cx="12" cy="15" r="2.5" stroke="var(--text-secondary)" strokeWidth="1.5" fill="none" opacity="0.7" />
   </svg>
 );
 
 // src 디렉토리 아이콘 (코드 브래킷)
 export const SrcFolderIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6z" fill="#00897B" opacity="0.6" />
-    <path d="M10 11l-2.5 2.5L10 16" stroke="#B2DFDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
-    <path d="M14 11l2.5 2.5L14 16" stroke="#B2DFDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6z" fill="var(--text-dim)" opacity="0.6" />
+    <path d="M10 11l-2.5 2.5L10 16" stroke="var(--accent-cyan)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+    <path d="M14 11l2.5 2.5L14 16" stroke="var(--accent-cyan)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
   </svg>
 );
 
 export const SrcFolderOpenIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v1H7.5c-1.2 0-2.3.8-2.7 2L2 18V6z" fill="#00897B" opacity="0.6" />
-    <path d="M4.8 11h16.4c.9 0 1.5.8 1.2 1.6l-2.4 7c-.2.5-.7.9-1.2.9H6.8c-.5 0-1-.3-1.2-.9l-2.4-7c-.3-.8.3-1.6 1.2-1.6z" fill="#26A69A" opacity="0.5" />
-    <path d="M10 14l-2 2L10 18" stroke="#B2DFDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-    <path d="M14 14l2 2L14 18" stroke="#B2DFDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v1H7.5c-1.2 0-2.3.8-2.7 2L2 18V6z" fill="var(--text-dim)" opacity="0.6" />
+    <path d="M4.8 11h16.4c.9 0 1.5.8 1.2 1.6l-2.4 7c-.2.5-.7.9-1.2.9H6.8c-.5 0-1-.3-1.2-.9l-2.4-7c-.3-.8.3-1.6 1.2-1.6z" fill="var(--text-tertiary)" opacity="0.5" />
+    <path d="M10 14l-2 2L10 18" stroke="var(--accent-cyan)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+    <path d="M14 14l2 2L14 18" stroke="var(--accent-cyan)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
   </svg>
 );
 
 // node_modules 디렉토리 아이콘
 export const NodeModulesFolderIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6z" fill="#689F38" opacity="0.5" />
-    <path d="M12 10v6M9.5 11.5L12 10l2.5 1.5M9.5 14.5L12 16l2.5-1.5" stroke="#C5E1A5" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6z" fill="var(--text-dim)" opacity="0.5" />
+    <path d="M12 10v6M9.5 11.5L12 10l2.5 1.5M9.5 14.5L12 16l2.5-1.5" stroke="var(--accent-green)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
   </svg>
 );
 
 export const NodeModulesFolderOpenIcon = ({ size = 16, className = '' }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v1H7.5c-1.2 0-2.3.8-2.7 2L2 18V6z" fill="#689F38" opacity="0.5" />
-    <path d="M4.8 11h16.4c.9 0 1.5.8 1.2 1.6l-2.4 7c-.2.5-.7.9-1.2.9H6.8c-.5 0-1-.3-1.2-.9l-2.4-7c-.3-.8.3-1.6 1.2-1.6z" fill="#8BC34A" opacity="0.4" />
-    <path d="M12 13v5M9.5 14.5L12 13l2.5 1.5" stroke="#C5E1A5" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+    <path d="M2 6C2 4.9 2.9 4 4 4h5l2 2h9c1.1 0 2 .9 2 2v1H7.5c-1.2 0-2.3.8-2.7 2L2 18V6z" fill="var(--text-dim)" opacity="0.5" />
+    <path d="M4.8 11h16.4c.9 0 1.5.8 1.2 1.6l-2.4 7c-.2.5-.7.9-1.2.9H6.8c-.5 0-1-.3-1.2-.9l-2.4-7c-.3-.8.3-1.6 1.2-1.6z" fill="var(--text-tertiary)" opacity="0.4" />
+    <path d="M12 13v5M9.5 14.5L12 13l2.5 1.5" stroke="var(--accent-green)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
   </svg>
 );
 
@@ -1099,7 +1099,7 @@ export const getIconForFolder = (folderName: string, isOpen: boolean, size: numb
 
 // .env 파일 아이콘
 export const EnvIcon = ({ size = 16, className = '' }: IconProps) => (
-  <VscKey size={size} className={className} color="#8BC34A" />
+  <VscKey size={size} className={className} color="var(--text-tertiary)" />
 );
 
 // .config 파일 아이콘

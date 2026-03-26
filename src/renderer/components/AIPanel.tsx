@@ -24,7 +24,7 @@ interface ChatSession {
 /**
  * AI 에이전트 패널 (Ctrl+L로 토글)
  */
-function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemChange, onCloseFile }: AIPanelProps) {
+function AIPanel({ onClose, workspacePath, onFileSystemChange, onCloseFile }: AIPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -481,10 +481,10 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
         window.electron.fs.readFile(fullPath)
       ]);
 
-      const original = diffResult.success ? diffResult.original : '';
-      const modified = fileResult.success ? (fileResult.content || '') : '';
+      const original = (diffResult.success && diffResult.original) ? diffResult.original : '';
+      const modified = (fileResult.success && fileResult.content) ? fileResult.content : '';
 
-      setSelectedDiff({ path: relativePath ?? fullPath, original, modified });
+      setSelectedDiff({ path: relativePath || fullPath, original, modified });
     } catch (err) {
       console.error('Failed to diff file:', err);
     }
@@ -500,8 +500,8 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
       minWidth: '140px',
       maxHeight: '200px',
       overflowY: 'auto',
-      backgroundColor: '#1e1e1e',
-      border: '1px solid #333',
+      backgroundColor: 'var(--bg-secondary)',
+      border: '1px solid var(--border-color)',
       borderRadius: '6px',
       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
       padding: '4px',
@@ -650,7 +650,7 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             maxWidth: '300px',
-            color: 'rgba(255, 255, 255, 0.7)',
+            color: 'var(--text-secondary)',
             letterSpacing: '0.2px',
           }}>
             {showHistory ? 'History' : headerTitle}

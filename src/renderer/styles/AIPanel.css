@@ -35,7 +35,7 @@
   font-weight: 800;
   margin: 0;
   letter-spacing: 0.5px;
-  color: #E0E0E0;
+  color: var(--text-primary);
 }
 
 .hello-greeting.root-anim {
@@ -227,11 +227,11 @@
 }
 
 .ai-message-user .ai-message-content {
-  background-color: rgba(20, 30, 48, 0.85);
-  color: #e0e0e0;
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
   margin-left: var(--spacing-lg);
-  border: 1px solid rgba(60, 80, 120, 0.35);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   padding: 10px var(--spacing-md);
   white-space: normal;
 }
@@ -243,7 +243,7 @@
 
 .ai-message-assistant .ai-message-content {
   background-color: var(--bg-tertiary);
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
   margin-right: var(--spacing-lg);
 }
 
@@ -323,10 +323,10 @@
 /* Floating Dropdown (Portal/Fixed) Style */
 .model-dropdown-menu-floating {
   position: fixed;
-  background-color: #1e1e1e;
-  border: 1px solid #333;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   z-index: 99999;
   /* 최상위 보장 */
   overflow-y: auto;
@@ -600,8 +600,8 @@
 }
 
 .resend-button:hover {
-  color: #fff;
-  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  background-color: var(--bg-hover);
 }
 
 .ai-message-content.group {
@@ -650,7 +650,7 @@
   border-radius: 6px;
   overflow: hidden;
   border: 1px solid var(--border-color);
-  background-color: #1e1e1e;
+  background-color: var(--bg-secondary);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -718,8 +718,8 @@
   font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
   font-size: 12px;
   line-height: 1.5;
-  color: #d4d4d4;
-  background-color: #1e1e1e;
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
 }
 
 /* Syntax Highlighting Colors (Basic Simulation) */
@@ -749,13 +749,12 @@
 
 /* Inline Code */
 .inline-code {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--bg-hover);
   padding: 2px 4px;
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.9em;
-  color: #ce9178;
-  /* Reddish String color often used for inline items */
+  color: var(--accent-red);
 }
 
 /* Lists */
