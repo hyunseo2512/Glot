@@ -28,16 +28,29 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('Quark-v2');
-
   // Session State
   const [sessionId, setSessionId] = useState<string>(() => Date.now().toString());
   const [chatHistory, setChatHistory] = useState<ChatSession[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [deleteSessionId, setDeleteSessionId] = useState<string | null>(null);
 
-  // AI 모드 상태 (Ask, Agent)
-  const [aiMode, setAiMode] = useState<'Ask' | 'Agent'>('Ask');
+  // AI 모드 상태 (Plan, Agent)
+  const [aiMode, setAiMode] = useState<'Plan' | 'Agent'>('Plan');
+  const [currentModel, setCurrentModel] = useState<string>('');
+
+  useEffect(() => {
+    const loadModel = async () => {
+      if (!(window.electron && window.electron.store)) return;
+      const p = await window.electron.store.get('ai_provider');
+      const provider = p.success && p.value ? String(p.value) : 'anthropic';
+      const m = await window.electron.store.get(`ai_${provider}_model`);
+      const model = m.success && m.value ? String(m.value) : provider;
+      setCurrentModel(model);
+    };
+    loadModel();
+    window.addEventListener('ai-settings-changed', loadModel);
+    return () => window.removeEventListener('ai-settings-changed', loadModel);
+  }, []);
 
   // Dropdown state for floating menu
   const [activeDropdown, setActiveDropdown] = useState<'mode' | 'model' | null>(null);
@@ -306,7 +319,7 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
         role: 'assistant',
         content: '',
         timestamp: new Date(),
-        model: selectedModel,
+        model: undefined,
       };
       setMessages((prev) => [...prev, initialAssistantMessage]);
 
@@ -331,7 +344,7 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
         .filter(m => m.role === 'user' || m.role === 'assistant')
         .map(m => ({ role: m.role, content: m.content }));
 
-      for await (const chunk of QuarkApi.chatStream(textToSend, selectedModel, abortController.signal, aiMode, workspacePath, systemPrompt, history)) {
+      for await (const chunk of QuarkApi.chatStream(textToSend, undefined, abortController.signal, aiMode, workspacePath, systemPrompt, history)) {
         fullContent += chunk;
         setMessages((prev) => prev.map(msg => msg.id === assistantMessageId ? { ...msg, content: fullContent } : msg));
       }
@@ -340,7 +353,11 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
         const errorMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
           role: 'system',
-          content: `오류: ${error.message}`,
+          content: `오류: ${
+            /ECONNREFUSED|ENOTFOUND|ETIMEDOUT|network|fetch|connect/i.test(error.message)
+              ? '서버에 연결할 수 없습니다. 설정에서 서버 URL과 API Key를 확인해주세요.'
+              : error.message
+          }`,
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, errorMessage]);
@@ -467,7 +484,7 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
       const original = diffResult.success ? diffResult.original : '';
       const modified = fileResult.success ? (fileResult.content || '') : '';
 
-      setSelectedDiff({ path: relativePath, original, modified });
+      setSelectedDiff({ path: relativePath ?? fullPath, original, modified });
     } catch (err) {
       console.error('Failed to diff file:', err);
     }
@@ -498,17 +515,12 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
       <div className="model-dropdown-menu-floating" style={style} onClick={(e) => e.stopPropagation()}>
         {activeDropdown === 'mode' && (
           <>
-            <div className={`model-dropdown-item mode-ask ${aiMode === 'Ask' ? 'selected' : ''}`} onClick={() => { setAiMode('Ask'); setActiveDropdown(null); }}>
-              <ChatBubbleIcon size={16} /> <span style={{ marginLeft: 8 }}>Ask</span>
+            <div className={`model-dropdown-item mode-plan ${aiMode === 'Plan' ? 'selected' : ''}`} onClick={() => { setAiMode('Plan'); setActiveDropdown(null); }}>
+              <ChatBubbleIcon size={16} /> <span style={{ marginLeft: 8 }}>Plan</span>
             </div>
             <div className={`model-dropdown-item mode-agent ${aiMode === 'Agent' ? 'selected' : ''}`} onClick={() => { setAiMode('Agent'); setActiveDropdown(null); }}>
               <InfinityIcon size={16} /> <span style={{ marginLeft: 8 }}>Agent</span>
             </div>
-          </>
-        )}
-        {activeDropdown === 'model' && (
-          <>
-            <div className={`model-dropdown-item ${selectedModel === 'Quark-v2' ? 'selected' : ''}`} onClick={() => { setSelectedModel('Quark-v2'); setActiveDropdown(null); }}>Quark v2</div>
           </>
         )}
       </div>, document.body
@@ -536,17 +548,16 @@ function AIPanel({ onClose, projectName = 'Glot', workspacePath, onFileSystemCha
               <div className="ai-input-footer-left">
                 <div className="model-dropdown-container ai-mode-dropdown-container" style={{ marginRight: '2px' }}>
                   <button className={`ai-model-select mode-${aiMode.toLowerCase()}`} onClick={(e) => !isLoading && handleOpenDropdown('mode', e)} disabled={isLoading} style={{ minWidth: '50px' }}>
-                    {aiMode === 'Ask' && <ChatBubbleIcon size={16} />}
+                    {aiMode === 'Plan' && <ChatBubbleIcon size={16} />}
                     {aiMode === 'Agent' && <InfinityIcon size={16} />}
                     <DropdownIcon size={12} className={`arrow ${activeDropdown === 'mode' ? 'open' : ''}`} />
                   </button>
                 </div>
-                <div className="model-dropdown-container">
-                  <button className="ai-model-select" onClick={(e) => !isLoading && handleOpenDropdown('model', e)} disabled={isLoading}>
-                    <span>{selectedModel}</span>
-                    <DropdownIcon size={12} className={`arrow ${activeDropdown === 'model' ? 'open' : ''}`} />
-                  </button>
-                </div>
+                {currentModel && (
+                  <span style={{ fontSize: '11px', color: 'var(--text-tertiary)', padding: '0 6px', userSelect: 'none' }}>
+                    {currentModel}
+                  </span>
+                )}
               </div>
               <div className="ai-input-footer-right">
                 <button className="ai-toolbar-btn" title="Add Context (+)" onClick={() => console.log('File add')}><PaperclipIcon size={16} /></button>
