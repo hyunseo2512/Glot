@@ -62,6 +62,61 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const getTerminalTheme = useCallback(() => {
+    const isLightTheme = document.documentElement.classList.contains('theme-modern-white');
+    return {
+      background: '#00000000',
+      foreground: isLightTheme ? '#212529' : '#e0e0e0',
+      cursor: isLightTheme ? '#0A66C2' : '#29b6f6',
+      cursorAccent: isLightTheme ? '#ffffff' : '#090b10',
+      selectionBackground: isLightTheme ? '#add6ff' : 'rgba(41, 182, 246, 0.3)',
+      black: isLightTheme ? '#000000' : '#090b10',
+      red: isLightTheme ? '#cd3131' : '#f07178',
+      green: isLightTheme ? '#008000' : '#c3e88d',
+      yellow: isLightTheme ? '#949800' : '#ffcb6b', // Darker yellow for visibility
+      blue: isLightTheme ? '#0451a5' : '#82aaff',
+      magenta: isLightTheme ? '#bc05bc' : '#c792ea',
+      cyan: isLightTheme ? '#0598bc' : '#89ddff',
+      white: isLightTheme ? '#555555' : '#d0d0d0', // Darker white
+      brightBlack: isLightTheme ? '#666666' : '#546e7a',
+      brightRed: isLightTheme ? '#cd3131' : '#f07178',
+      brightGreen: isLightTheme ? '#14ce14' : '#c3e88d',
+      brightYellow: isLightTheme ? '#b5ba00' : '#ffcb6b',
+      brightBlue: isLightTheme ? '#0451a5' : '#82aaff',
+      brightMagenta: isLightTheme ? '#bc05bc' : '#c792ea',
+      brightCyan: isLightTheme ? '#0598bc' : '#89ddff',
+      brightWhite: isLightTheme ? '#333333' : '#ffffff',
+    };
+  }, []);
+
+  // Update theme when class changes
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(m => {
+        if (m.attributeName === 'class') {
+          const newTheme = getTerminalTheme();
+          tabsRef.current.forEach(tab => {
+            if (tab.type === 'terminal' && (tab as TerminalTab).term) {
+              (tab as TerminalTab).term.options.theme = newTheme;
+            }
+          });
+        }
+      });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, [getTerminalTheme]);
+
+  // Apply immediately on mount / HMR
+  useEffect(() => {
+    const newTheme = getTerminalTheme();
+    tabsRef.current.forEach(tab => {
+      if (tab.type === 'terminal' && (tab as TerminalTab).term) {
+        (tab as TerminalTab).term.options.theme = newTheme;
+      }
+    });
+  }, [getTerminalTheme]);
+
   // Fetch System Shell for "Default" label
   useEffect(() => {
     const fetchSystemShell = async () => {
@@ -572,29 +627,7 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
         scrollback: 1000, // Default safe value, updated from settings
         allowProposedApi: true,
         allowTransparency: true,
-        theme: {
-          background: '#00000000',
-          foreground: '#e0e0e0',
-          cursor: '#29b6f6',
-          cursorAccent: '#090b10',
-          selectionBackground: 'rgba(41, 182, 246, 0.3)',
-          black: '#090b10',
-          red: '#f07178',
-          green: '#c3e88d',
-          yellow: '#ffcb6b',
-          blue: '#82aaff',
-          magenta: '#c792ea',
-          cyan: '#89ddff',
-          white: '#d0d0d0',
-          brightBlack: '#546e7a',
-          brightRed: '#f07178',
-          brightGreen: '#c3e88d',
-          brightYellow: '#ffcb6b',
-          brightBlue: '#82aaff',
-          brightMagenta: '#c792ea',
-          brightCyan: '#89ddff',
-          brightWhite: '#ffffff',
-        },
+        theme: getTerminalTheme(),
       });
 
       // Load scrollback setting
