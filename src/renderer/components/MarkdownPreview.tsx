@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -12,13 +12,36 @@ interface MarkdownPreviewProps {
 }
 
 const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, fileName, workspaceDir }) => {
+    const bodyRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const el = bodyRef.current;
+        if (!el) return;
+
+        // Use native capture-phase listener so we intercept the wheel event
+        // before Monaco Editor's own global wheel handler can consume it.
+        const handleWheel = (e: WheelEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            el.scrollTop += e.deltaY;
+        };
+
+        el.addEventListener('wheel', handleWheel, { passive: false, capture: true });
+        return () => {
+            el.removeEventListener('wheel', handleWheel, { capture: true });
+        };
+    }, []);
+
     return (
         <div className="markdown-preview">
             <div className="markdown-preview-header">
                 <span className="markdown-preview-label">Preview</span>
                 {fileName && <span className="markdown-preview-filename">{fileName}</span>}
             </div>
-            <div className="markdown-preview-body">
+            <div
+                className="markdown-preview-body"
+                ref={bodyRef}
+            >
                 <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     rehypePlugins={[rehypeRaw]}
