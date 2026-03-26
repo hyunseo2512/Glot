@@ -3,6 +3,8 @@ import { Eye, EyeOff } from 'lucide-react';
 import { XIcon, SettingsIcon } from './Icons';
 import { KeyBinding, DEFAULT_SHORTCUTS } from '../types/shortcuts';
 import { EditorSettings, DEFAULT_EDITOR_SETTINGS } from '../types/settings';
+import { AIProvider } from '../types';
+import { DEFAULT_MODELS, PROVIDER_MODELS } from '../services/api';
 import '../styles/SettingsPanel.css';
 interface SettingsPanelProps {
   onClose: () => void;
@@ -162,10 +164,12 @@ function SettingsPanel({ onClose, onOpenSettingsJson, onApply }: SettingsPanelPr
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  // [SERVER_URL] 서버 URL 설정 (주석 처리 - 고정 백엔드 사용)
-  // const [connectionUrl, setConnectionUrl] = useState('');
-  const [apiKey, setApiKey] = useState('');
-  const [showApiKey, setShowApiKey] = useState(false);
+  const ALL_PROVIDERS: AIProvider[] = ['anthropic', 'gemini', 'openai', 'local'];
+  const [aiProvider, setAiProvider] = useState<AIProvider>('anthropic');
+  const [providerKeys, setProviderKeys] = useState<Record<AIProvider, string>>({ anthropic: '', gemini: '', openai: '', local: '' });
+  const [providerModels, setProviderModels] = useState<Record<AIProvider, string>>({ ...DEFAULT_MODELS });
+  const [localUrl, setLocalUrl] = useState('http://localhost:11434');
+  const [showKey, setShowKey] = useState(false);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -210,37 +214,37 @@ function SettingsPanel({ onClose, onOpenSettingsJson, onApply }: SettingsPanelPr
         setShortcuts(merged);
       }
 
-      // [SERVER_URL] 서버 URL 로드 (주석 처리)
-      // const urlResult = await window.electron.store.get('ai_core_url');
-      // if (urlResult.success && urlResult.value) {
-      //   setConnectionUrl(String(urlResult.value));
-      // } else {
-      //   setConnectionUrl('http://100.110.157.32:9000');
-      // }
+      // Load AI provider config
+      const prov = await window.electron.store.get('ai_provider');
+      const activeProvider: AIProvider = (prov.success && prov.value ? String(prov.value) : 'anthropic') as AIProvider;
+      setAiProvider(activeProvider);
 
-      // Load AI API Key
-      const keyResult = await window.electron.store.get('ai_api_key');
-      if (keyResult.success && keyResult.value) {
-        setApiKey(String(keyResult.value));
+      const keys: Record<AIProvider, string> = { anthropic: '', gemini: '', openai: '', local: '' };
+      const models: Record<AIProvider, string> = { ...DEFAULT_MODELS };
+      for (const p of ['anthropic', 'gemini', 'openai', 'local'] as AIProvider[]) {
+        const k = await window.electron.store.get(`ai_${p}_key`);
+        if (k.success && k.value) keys[p] = String(k.value);
+        const m = await window.electron.store.get(`ai_${p}_model`);
+        if (m.success && m.value) models[p] = String(m.value);
       }
+      setProviderKeys(keys);
+      setProviderModels(models);
+      const u = await window.electron.store.get('ai_local_url');
+      if (u.success && u.value) setLocalUrl(String(u.value));
 
     };
     loadSettings();
   }, []);
 
   const handleConnectionSave = async () => {
-    // [SERVER_URL] 서버 URL 저장 (주석 처리)
-    // let url = connectionUrl.trim();
-    // if (!url) return;
-    // url = url.replace(/\/$/, '');
-    // if (!url.startsWith('http')) url = `http://${url}`;
-    // await window.electron.store.set('ai_core_url', url);
-    // setConnectionUrl(url);
-
-    // Save API Key
-    await window.electron.store.set('ai_api_key', apiKey.trim());
-
-    showToast('API Key saved.');
+    await window.electron.store.set('ai_provider', aiProvider);
+    for (const p of ALL_PROVIDERS) {
+      await window.electron.store.set(`ai_${p}_key`, providerKeys[p].trim());
+      await window.electron.store.set(`ai_${p}_model`, providerModels[p]);
+    }
+    await window.electron.store.set('ai_local_url', localUrl.trim());
+    window.dispatchEvent(new CustomEvent('ai-settings-changed'));
+    showToast('AI 설정이 저장되었습니다.');
   };
 
   const handleApplyAll = async () => {
@@ -352,124 +356,110 @@ function SettingsPanel({ onClose, onOpenSettingsJson, onApply }: SettingsPanelPr
             <div className="settings-section">
               <h3>AI Connection</h3>
 
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '12px',
-                padding: '24px',
-                marginTop: '16px',
-                backdropFilter: 'blur(10px)',
-                boxShadow: '0 4px 24px rgba(0, 0, 0, 0.2)'
-              }}>
-                <div style={{ marginBottom: '20px' }}>
-                  <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', color: '#e0e0e0' }}>API Key</h4>
-                </div>
+              {/* 프로바이더 선택 카드 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px', marginBottom: '20px' }}>
+                {([
+                  { id: 'local',     label: 'Local AI', sub: 'Ollama / LM Studio' },
+                  { id: 'anthropic', label: 'Claude',   sub: 'Anthropic' },
+                  { id: 'gemini',    label: 'Gemini',   sub: 'Google' },
+                  { id: 'openai',    label: 'ChatGPT',  sub: 'OpenAI' },
+                ] as { id: AIProvider; label: string; sub: string }[]).map(({ id, label, sub }) => (
+                  <div
+                    key={id}
+                    onClick={() => { setAiProvider(id); setShowKey(false); }}
+                    style={{
+                      padding: '14px',
+                      borderRadius: '10px',
+                      border: `2px solid ${aiProvider === id ? 'var(--accent-blue)' : 'var(--border-color)'}`,
+                      background: aiProvider === id ? 'var(--bg-hover)' : 'var(--bg-secondary)',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    <div style={{ fontWeight: 600, fontSize: '14px', color: aiProvider === id ? 'var(--accent-blue)' : 'var(--text-primary)' }}>{label}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px' }}>{sub}</div>
+                  </div>
+                ))}
+              </div>
 
-                <div className="setting-item" style={{ display: 'block' }}>
-                  {/* [SERVER_URL] 서버 URL 입력 필드 (주석 처리)
-                  <label style={{ marginBottom: '8px', display: 'block', color: 'var(--text-secondary)', fontSize: '13px' }}>Server URL</label>
-                  <div style={{ position: 'relative', marginBottom: '16px' }}>
+              {/* 선택된 프로바이더 설정 */}
+              <div style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '10px',
+                padding: '20px',
+              }}>
+                {/* Local AI: URL 필드 */}
+                {aiProvider === 'local' && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: 'var(--text-secondary)' }}>Base URL</label>
                     <input
                       type="text"
-                      value={connectionUrl}
-                      onChange={(e) => setConnectionUrl(e.target.value)}
-                      placeholder="http://100.x.x.x:9000"
-                      style={{
-                        width: '100%', padding: '10px 14px 10px 36px',
-                        background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: '8px', color: 'var(--text-primary)', fontSize: '14px',
-                        transition: 'all 0.2s', boxSizing: 'border-box'
-                      }}
+                      value={localUrl}
+                      onChange={(e) => setLocalUrl(e.target.value)}
+                      placeholder="http://localhost:11434"
+                      style={{ width: '100%', padding: '9px 12px', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', borderRadius: '7px', color: 'var(--text-primary)', fontSize: '13px', boxSizing: 'border-box' }}
                     />
                   </div>
-                  */}
+                )}
 
-                  {/* API Key */}
-                  <label style={{ marginBottom: '8px', display: 'block', color: 'var(--text-secondary)', fontSize: '13px' }}>
-                  
-                  </label>
-                  <div style={{ position: 'relative', marginBottom: '20px' }}>
+                {/* API Key (Local 제외) */}
+                {aiProvider !== 'local' && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: 'var(--text-secondary)' }}>API Key</label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type={showKey ? 'text' : 'password'}
+                        value={providerKeys[aiProvider]}
+                        onChange={(e) => setProviderKeys(prev => ({ ...prev, [aiProvider]: e.target.value }))}
+                        placeholder={`${aiProvider === 'anthropic' ? 'sk-ant-...' : aiProvider === 'gemini' ? 'AIza...' : 'sk-...'}`}
+                        style={{ width: '100%', padding: '9px 40px 9px 12px', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', borderRadius: '7px', color: 'var(--text-primary)', fontSize: '13px', boxSizing: 'border-box' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowKey(p => !p)}
+                        style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', padding: 0 }}
+                        tabIndex={-1}
+                      >
+                        {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* 모델 선택 */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: 'var(--text-secondary)' }}>Model</label>
+                  {PROVIDER_MODELS[aiProvider].length > 0 ? (
+                    <select
+                      value={providerModels[aiProvider]}
+                      onChange={(e) => setProviderModels(prev => ({ ...prev, [aiProvider]: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', borderRadius: '7px', color: 'var(--text-primary)', fontSize: '13px', cursor: 'pointer' }}
+                    >
+                      {PROVIDER_MODELS[aiProvider].map(m => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  ) : (
                     <input
-                      type={showApiKey ? 'text' : 'password'}
-                      value={apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                      placeholder=""
-                      style={{
-                        width: '100%',
-                        padding: '10px 40px 10px 14px',
-                        background: 'rgba(0, 0, 0, 0.2)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '8px',
-                        color: 'var(--text-primary)',
-                        fontSize: '14px',
-                        transition: 'all 0.2s',
-                        boxSizing: 'border-box'
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = '#536DFE';
-                        e.target.style.background = 'rgba(0, 0, 0, 0.3)';
-                        e.target.style.boxShadow = '0 0 0 2px rgba(83, 109, 254, 0.2)';
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                        e.target.style.background = 'rgba(0, 0, 0, 0.2)';
-                        e.target.style.boxShadow = 'none';
-                      }}
+                      type="text"
+                      value={providerModels[aiProvider]}
+                      onChange={(e) => setProviderModels(prev => ({ ...prev, [aiProvider]: e.target.value }))}
+                      placeholder="llama3, mistral, codellama ..."
+                      style={{ width: '100%', padding: '9px 12px', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', borderRadius: '7px', color: 'var(--text-primary)', fontSize: '13px', boxSizing: 'border-box' }}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowApiKey(prev => !prev)}
-                      style={{
-                        position: 'absolute',
-                        right: '10px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: 'var(--text-secondary)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '2px'
-                      }}
-                      tabIndex={-1}
-                    >
-                      {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
-                  </div>
+                  )}
+                </div>
 
-                  {/* Save Button */}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <button
-                      className="save-button"
-                      onClick={handleConnectionSave}
-                      style={{
-                        background: 'linear-gradient(135deg, #536DFE 0%, #304FFE 100%)',
-                        border: 'none',
-                        borderRadius: '8px',
-                        padding: '10px 20px',
-                        color: 'white',
-                        fontWeight: '600',
-                        fontSize: '14px',
-                        cursor: 'pointer',
-                        boxShadow: '0 4px 12px rgba(48, 79, 254, 0.3)',
-                        transition: 'transform 0.1s'
-                      }}
-                      onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.96)'}
-                      onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                    >
-                      Save
-                    </button>
-                  </div>
-
-                  {/* [SERVER_URL] Connection Guide TIP (주석 처리)
-                  <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(83,109,254,0.05)', borderRadius: '8px', border: '1px solid rgba(83,109,254,0.1)' }}>
-                    <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '12px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.6' }}>
-                      <li>Localhost: http://localhost:9000</li>
-                      <li>Tailscale: 100.110.x.x:9000</li>
-                    </ul>
-                  </div>
-                  */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <button
+                    onClick={handleConnectionSave}
+                    style={{ background: 'var(--accent-blue)', border: 'none', borderRadius: '7px', padding: '9px 20px', color: 'white', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+                    onMouseDown={(e) => e.currentTarget.style.opacity = '0.8'}
+                    onMouseUp={(e) => e.currentTarget.style.opacity = '1'}
+                  >
+                    Save
+                  </button>
                 </div>
               </div>
             </div>
