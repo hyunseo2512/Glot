@@ -862,7 +862,7 @@ function CodeEditor({
               <>
                 {/* Markdown Preview: Render if markdown, hidden if preview inactive */}
                 {isMarkdown && (
-                  <div style={{ display: markdownPreview ? 'block' : 'none', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+                  <div style={{ display: markdownPreview ? 'flex' : 'none', flex: 1, minHeight: 0, flexDirection: 'column', height: '100%' }}>
                     <MarkdownPreview
                       content={debouncedContent}
                       fileName={activeFile.path.split('/').pop()}
@@ -963,6 +963,7 @@ function CodeEditor({
                       mouseWheelZoom: true,
                       fixedOverflowWidgets: true,
                       cursorSurroundingLines: 5,
+                      renderLineHighlight: 'none',
                       padding: { top: 10, bottom: 20 },
                       'semanticHighlighting.enabled': true,
                     }}

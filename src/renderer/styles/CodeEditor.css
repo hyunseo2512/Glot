@@ -1249,26 +1249,27 @@
   justify-content: center;
   border: none;
   background: transparent;
-  color: #546E7A;
-  /* Dimmed */
+  color: var(--text-tertiary);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .tab-nav-btn:hover {
-  background-color: rgba(0, 191, 255, 0.1);
-  color: #00BFFF;
-  /* Neon Blue Glow */
-  box-shadow: 0 0 6px rgba(0, 191, 255, 0.2);
+  background-color: var(--bg-hover);
+  color: var(--accent-blue);
 }
 
 .tab-nav-btn:active {
   transform: scale(0.95);
-  background-color: rgba(0, 191, 255, 0.2);
+  background-color: var(--bg-hover);
 }
 
 .tab-nav-btn svg {
   stroke-width: 2.5;
-  /* Slightly bolder */
+}
+
+.tab-control-button:hover {
+  background-color: var(--bg-hover) !important;
+  color: var(--accent-blue) !important;
 }

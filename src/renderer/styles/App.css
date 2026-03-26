@@ -738,7 +738,7 @@
 .layout-button {
   background: none;
   border: none;
-  color: #858585;
+  color: var(--text-tertiary);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -754,6 +754,6 @@
 }
 
 .layout-button.active {
-  color: #d1d5db;
+  color: var(--accent-blue);
   background-color: transparent;
 }
