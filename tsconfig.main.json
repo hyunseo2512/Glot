@@ -1,19 +1,25 @@
 {
   "compilerOptions": {
+    // Language & Environment (Node.js / Electron main)
     "target": "ES2020",
     "lib": ["ES2020"],
+
+    // Modules (CommonJS for Node.js)
     "module": "CommonJS",
     "moduleResolution": "node",
-    "outDir": "dist/main",
+
+    // Paths
     "rootDir": "src/main",
-    "strict": true,
+    "outDir": "dist/main",
+
+    // Interop
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "noEmit": false,
-    "jsx": "preserve"
+
+    // Type Checking
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   },
   "include": ["src/main/**/*"],
   "exclude": ["node_modules", "dist"]
