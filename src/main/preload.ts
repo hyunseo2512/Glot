@@ -78,11 +78,6 @@ contextBridge.exposeInMainWorld('electron', {
     getZoomFactor: () => require('electron').webFrame.getZoomFactor(),
   },
 
-  // Linter
-  linter: {
-    check: (filePath: string) => ipcRenderer.invoke('linter:check', filePath),
-  },
-
   // 시스템 정보
   platform: process.platform,
 
@@ -210,10 +205,6 @@ contextBridge.exposeInMainWorld('electron', {
     }
   },
 
-  python: {
-    getVersion: () => ipcRenderer.invoke('python:get-version'),
-    run: (script: string) => ipcRenderer.invoke('python:run', script),
-  },
   env: {
     scanPython: (projectRoot: string) => ipcRenderer.invoke('env:scan-python', projectRoot),
   },
@@ -266,16 +257,6 @@ declare global {
         getZoomLevel: () => number;
         setZoomFactor: (factor: number) => void;
         getZoomFactor: () => number;
-      };
-      linter: {
-        check: (filePath: string) => Promise<Array<{
-          line: number;
-          column: number;
-          type: 'error' | 'warning' | 'info';
-          message: string;
-          symbol: string;
-          messageId: string;
-        }>>;
       };
       platform: string;
       app: {

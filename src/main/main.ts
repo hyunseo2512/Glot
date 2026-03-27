@@ -1,7 +1,5 @@
 import { app, BrowserWindow, ipcMain, Menu, net } from 'electron';
 import path from 'path';
-import { pythonService } from './services/pythonService';
-import { linterService } from './services/LinterService';
 
 // Linux IME 호환성 설정 (XWayland 모드 + XIM 프로토콜로 fcitx5 한글 입력 지원)
 if (process.platform === 'linux') {
@@ -354,18 +352,6 @@ function setupIpcHandlers(): void {
     }
   });
 
-  // Linter (Python/C/C++ 지원)
-  ipcMain.handle('linter:check', async (_event, filePath: string) => {
-    const ext = filePath.split('.').pop()?.toLowerCase() || '';
-
-    // C/C++ 파일
-    if (['c', 'h', 'cpp', 'cc', 'cxx', 'hpp', 'hh', 'hxx'].includes(ext)) {
-      return await linterService.checkC(filePath);
-    }
-
-    // Python 파일 (기본)
-    return await linterService.checkPython(filePath);
-  });
 
 
   // 홈 디렉토리 경로 반환 (인앱 파일 브라우저용)
@@ -1119,13 +1105,6 @@ function setupIpcHandlers(): void {
     }
   });
 
-  // ----------------------------------------------------------------------
-  // Python IPC Handlers
-  // ----------------------------------------------------------------------
-  ipcMain.handle('python:get-version', async () => {
-    return await pythonService.getVersion();
-  });
-
   // Environment Service
   ipcMain.handle('env:scan-python', async (_, projectRoot: string) => {
     const { environmentService } = await import('./services/EnvironmentService');
@@ -1136,12 +1115,6 @@ function setupIpcHandlers(): void {
       return [];
     }
   });
-
-  ipcMain.handle('python:run', async (_, script: string) => {
-    return await pythonService.runScript(script);
-  });
-
-
 
 
 
