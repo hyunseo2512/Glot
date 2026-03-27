@@ -159,9 +159,6 @@ function App() {
   const [unsavedFilesForModal, setUnsavedFilesForModal] = useState<OpenFile[]>([]);
   const unsavedChangesResolveRef = useRef<(value: boolean) => void>(() => { });
 
-  // Diagnostics (Errors/Warnings)
-  const [diagnostics, setDiagnostics] = useState<{ errors: number; warnings: number; markers: any[] }>({ errors: 0, warnings: 0, markers: [] });
-
   // Current Git Branch
   const [currentBranch, setCurrentBranch] = useState<string>('');
 
@@ -1510,7 +1507,7 @@ function App() {
     setWorkspaceDir(null);
     setOpenFiles([]);
     setActiveFileIndex(-1);
-    setDiagnostics({ errors: 0, warnings: 0, markers: [] });
+
     setRemoteUser('');
     setIsTerminalOpen(false);
     window.dispatchEvent(new Event('terminal-close-all'));
@@ -1535,7 +1532,7 @@ function App() {
     setWorkspaceDir(null);
     setOpenFiles([]);
     setActiveFileIndex(-1);
-    setDiagnostics({ errors: 0, warnings: 0, markers: [] });
+
     setSidebarView('explorer');
     setShowCloseProjectModal(false);
   };
@@ -2155,7 +2152,6 @@ function App() {
                     onMoveToOtherGroup={() => handleMoveToOtherGroup('primary')}
                     moveDirection="right"
                     settings={editorSettings}
-                    onDiagnosticsChange={(errors, warnings, markers) => setDiagnostics({ errors, warnings, markers })}
                     workspaceDir={workspaceDir || undefined}
                     isActive={activeGroup === 'primary'}
                     onFocus={() => setActiveGroup('primary')}
@@ -2256,7 +2252,7 @@ function App() {
                 cwd={isRemoteWorkspace ? undefined : (workspaceDir || undefined)}
                 isRemote={isRemoteWorkspace}
                 remoteCwd={isRemoteWorkspace && workspaceDir ? workspaceDir : undefined}
-                diagnostics={diagnostics}
+
               />
             </div>
           </div>
@@ -2321,27 +2317,6 @@ function App() {
             </div>
           )}
 
-          <div
-            className="status-item clickable"
-            style={{ gap: '8px', marginLeft: '8px' }}
-            data-tooltip="Errors & Warnings"
-            data-tooltip-pos="top"
-            onClick={() => {
-              setIsTerminalOpen(true);
-              setTimeout(() => {
-                window.dispatchEvent(new CustomEvent('glot:open-problems'));
-              }, 50);
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#f07178' }}>
-              <ErrorIcon size={14} />
-              <span>{diagnostics.errors}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ffcb6b' }}>
-              <WarningIcon size={14} />
-              <span>{diagnostics.warnings}</span>
-            </div>
-          </div>
         </div>
         <div className="status-right">
           <div className="status-item zoom-container">
@@ -2514,7 +2489,7 @@ function App() {
                 setWorkspaceDir(null);
                 setOpenFiles([]);
                 setActiveFileIndex(-1);
-                setDiagnostics({ errors: 0, warnings: 0, markers: [] });
+            
                 setRemoteUser('');
                 setIsTerminalOpen(false);
                 window.dispatchEvent(new Event('terminal-close-all'));

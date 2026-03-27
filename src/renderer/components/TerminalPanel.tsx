@@ -3,7 +3,7 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebglAddon } from '@xterm/addon-webgl';
 import { ClipboardAddon } from '@xterm/addon-clipboard';
-import { TerminalIcon, PlusCircleIcon, XIcon, ChevronUpIcon, ChevronDownIcon, ErrorIcon, WarningIcon, BashIcon, ZshIcon, TmuxIcon, PowerShellIcon } from './Icons';
+import { TerminalIcon, PlusCircleIcon, XIcon, ChevronUpIcon, ChevronDownIcon, BashIcon, ZshIcon, TmuxIcon, PowerShellIcon } from './Icons';
 import '@xterm/xterm/css/xterm.css';
 import '../styles/TerminalPanel.css';
 
@@ -14,7 +14,6 @@ interface TerminalPanelProps {
   cwd?: string;
   isRemote?: boolean;
   remoteCwd?: string;
-  diagnostics?: { errors: number; warnings: number; markers?: any[] };
 }
 
 interface BaseTab {
@@ -41,15 +40,13 @@ type Tab = TerminalTab | ProblemsTab;
 
 
 
-function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false, remoteCwd, diagnostics = { errors: 0, warnings: 0, markers: [] } }: TerminalPanelProps) {
+function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false, remoteCwd }: TerminalPanelProps) {
   const isRemoteRef = useRef(isRemote);
   isRemoteRef.current = isRemote;
   const remoteCwdRef = useRef(remoteCwd);
   remoteCwdRef.current = remoteCwd;
   const [tabs, setTabs] = useState<Tab[]>([]);
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'terminal' | 'problems'>('terminal');
-  const [instanceDropdownOpen, setInstanceDropdownOpen] = useState(false);
 
   // Shell Dropdown State
   const [isShellDropdownOpen, setIsShellDropdownOpen] = useState(false);
@@ -209,18 +206,6 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isShellDropdownOpen]);
 
-  // 드롭다운 외부 클릭 시 닫기
-  useEffect(() => {
-    if (!instanceDropdownOpen) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest('.instance-selector')) {
-        setInstanceDropdownOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [instanceDropdownOpen]);
 
   const tabsRef = useRef<Tab[]>(tabs);
   useEffect(() => {
@@ -370,62 +355,6 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
 
       if (!command) return;
 
-      if (file && diagnostics.markers) {
-        const fileHasErrors = diagnostics.markers.some(m => {
-          if (m.severity !== 8) return false;
-          return m.resource.path.includes(file) || file.includes(m.resource.path);
-        });
-
-        if (fileHasErrors) {
-          setViewMode('problems');
-          return;
-        }
-      }
-
-
-      console.log('glot:run-command received:', { command, file, isRemote: isRemoteRef.current });
-
-      if (!command) return;
-
-      if (file && diagnostics.markers) {
-        // ... (existing diagnostic check logic - preserving it implicitly if not replacing whole block, 
-        // but here we are replacing from line 263. So need to include it.)
-        const fileDiagnostics = diagnostics.markers.filter(d =>
-          d.resource.toString() === `file://${file}` &&
-          d.severity === 1
-        );
-
-        if (fileDiagnostics.length > 0) {
-          setViewMode('problems');
-          // return; // User prefers to run even if errors? Previous code didn't block.
-          // Actually previous code had:
-          /*
-           if (fileHasErrors) {
-             setViewMode('problems');
-             return;
-           }
-          */
-          // Let's restore that behavior if it was there.
-          // Viewing lines 267-277 in previous `view_file` (lines 268-278 in provided block):
-          /*
-           if (file && diagnostics.markers) {
-               const fileHasErrors = ...
-               if (fileHasErrors) { setViewMode('problems'); return; }
-           }
-          */
-        }
-      }
-
-      // Need to restore the check logic properly since we are replacing the handler start.
-      // Wait, let's just replace the body part concerning execution, to avoid messing up the top.
-      // But `async` keyword needs to be added to the function definition.
-      // The function definition is at line 258 `const handleRunCommand = ...`.
-      // I can't easily change it to `async` without replacing the definition line.
-      // Or I can execute an IIFE inside? 
-      // `(async () => { ... })()`
-
-
-
       (async () => {
         // Single Run Instance Logic
         const RUN_TAB_ID = 'glot-run-terminal';
@@ -468,10 +397,6 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
 
 
 
-    const handleOpenProblems = () => {
-      setViewMode('problems');
-    };
-
     const handleSwitchTabEvent = (e: CustomEvent<{ direction: 'prev' | 'next' }>) => {
       const tTabs = tabs.filter(t => t.type === 'terminal') as TerminalTab[];
       if (tTabs.length <= 1) return;
@@ -501,19 +426,17 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
     };
 
     window.addEventListener('glot:run-command', handleRunCommand as EventListener);
-    window.addEventListener('glot:open-problems', handleOpenProblems as EventListener);
     window.addEventListener('terminal-switch-tab', handleSwitchTabEvent as EventListener);
     window.addEventListener('terminal-close-tab', handleCloseTabEvent);
     window.addEventListener('terminal-focus', handleFocusEvent);
 
     return () => {
       window.removeEventListener('glot:run-command', handleRunCommand as EventListener);
-      window.removeEventListener('glot:open-problems', handleOpenProblems as EventListener);
       window.removeEventListener('terminal-switch-tab', handleSwitchTabEvent as EventListener);
       window.removeEventListener('terminal-close-tab', handleCloseTabEvent);
       window.removeEventListener('terminal-focus', handleFocusEvent);
     };
-  }, [activeTabId, tabs, diagnostics]);
+  }, [activeTabId, tabs]);
 
   // ResizeObserver for Auto Fit
   useEffect(() => {
@@ -847,27 +770,15 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
         {/* 좌측: 고정 탭 */}
         <div className="terminal-fixed-tabs">
           <div
-            className={`terminal-fixed-tab ${viewMode === 'terminal' ? 'active' : ''}`}
-            onClick={() => { setViewMode('terminal'); if (activeTabId) setTimeout(fitTerminal, 0); }}
+            className="terminal-fixed-tab active"
           >
             <span>TERMINAL</span>
-          </div>
-          <div
-            className={`terminal-fixed-tab ${viewMode === 'problems' ? 'active' : ''}`}
-            onClick={() => setViewMode('problems')}
-          >
-            <span>PROBLEMS</span>
-            {(diagnostics.errors > 0 || diagnostics.warnings > 0) && (
-              <span className="problems-badge">
-                {diagnostics.errors + diagnostics.warnings}
-              </span>
-            )}
           </div>
         </div>
 
         {/* 우측: 액션 */}
         <div className="terminal-header-actions">
-          {viewMode === 'terminal' && (
+          {(
             <div style={{ position: 'relative' }} className="shell-dropdown-trigger">
               <button
                 className="action-btn"
@@ -929,7 +840,7 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
               id={`terminal-content-${tab.id}`}
               className="terminal-instance"
               style={{
-                display: viewMode === 'terminal' && tab.id === activeTabId ? 'block' : 'none',
+                display: tab.id === activeTabId ? 'block' : 'none',
                 height: '100%',
                 width: '100%'
               }}
@@ -937,73 +848,17 @@ function TerminalPanel({ onClose, onMaximize, isMaximized, cwd, isRemote = false
           ))}
 
           {/* Empty State */}
-          {viewMode === 'terminal' && terminalTabs.length === 0 && (
+          {terminalTabs.length === 0 && (
             <div className="terminal-empty">
               <p>No open terminals</p>
               <button onClick={() => handleAddTab('default')}>Open New Terminal</button>
             </div>
           )}
 
-          {/* Problems View */}
-          {viewMode === 'problems' && (
-            <div
-              className="problems-view"
-              style={{
-                height: '100%',
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '16px',
-                overflowY: 'auto',
-                color: 'var(--text-primary)'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <ErrorIcon size={16} color="#f07178" />
-                <span style={{ fontWeight: 'bold' }}>{diagnostics.errors} Errors</span>
-                <div style={{ width: '1px', height: '16px', background: 'var(--border-color)', margin: '0 8px' }} />
-                <WarningIcon size={16} color="#ffcb6b" />
-                <span style={{ fontWeight: 'bold' }}>{diagnostics.warnings} Warnings</span>
-              </div>
-              <div className="problems-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {diagnostics.markers && diagnostics.markers.length > 0 ? (
-                  diagnostics.markers.map((marker, idx) => (
-                    <div
-                      key={idx}
-                      className="problem-item"
-                      style={{
-                        background: 'var(--bg-secondary)',
-                        padding: '8px 12px',
-                        borderRadius: '4px',
-                        borderLeft: `3px solid ${marker.severity === 8 ? '#f07178' : '#ffcb6b'}`,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                        <span style={{ fontWeight: 'bold', color: 'var(--text-primary)', fontSize: '13px' }}>
-                          {marker.resource?.path ? (marker.resource.path.split('/').pop() || marker.resource.path) : 'Unknown File'}
-                        </span>
-                        <span style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>
-                          Ln {marker.startLineNumber}, Col {marker.startColumn}
-                        </span>
-                      </div>
-                      <div style={{ color: 'var(--text-secondary)', fontSize: '13px', whiteSpace: 'pre-wrap' }}>
-                        {marker.message}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div style={{ background: 'var(--bg-secondary)', padding: '12px', borderRadius: '4px' }}>
-                    <p>No problems detected in open files.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Sidebar (Right) - Only visible in Terminal Mode */}
-        {viewMode === 'terminal' && terminalTabs.length > 0 && (
+        {/* Sidebar (Right) */}
+        {terminalTabs.length > 0 && (
           <div
             className={`terminal-sidebar ${sidebarWidth < 100 ? 'collapsed' : ''}`}
             style={{ width: sidebarWidth }}

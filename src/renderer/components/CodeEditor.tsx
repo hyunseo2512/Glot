@@ -226,7 +226,6 @@ interface CodeEditorProps {
   onCloseAll?: () => void;
   onSave: (index?: number) => void;
   onReorderTabs?: (fromIndex: number, toIndex: number) => void;
-  onDiagnosticsChange?: (errors: number, warnings: number, markers: any[]) => void;
   settings?: any;
   workspaceDir?: string;
   onMoveToOtherGroup?: () => void;
@@ -281,7 +280,6 @@ function CodeEditor({
   onCloseAll,
   onSave,
   onReorderTabs,
-  onDiagnosticsChange,
   settings,
   workspaceDir,
   onMoveToOtherGroup,
@@ -301,7 +299,6 @@ function CodeEditor({
   const isBinary = activeFile ? isBinaryFile(activeFile.path, activeFile.content) && !forceOpenBinary.has(activeFile.path) : false;
   const isMarkdown = language === 'markdown';
   const [debouncedContent, setDebouncedContent] = useState('');
-  const [fileErrors, setFileErrors] = useState<{ [path: string]: number }>({});
   const monaco = useMonaco();
 
   // Markdown Preview Toggle via custom event
@@ -322,46 +319,6 @@ function CodeEditor({
     return () => clearTimeout(handler);
   }, [activeFile?.content, isMarkdown]);
 
-  // Listen to Monaco Markers (Errors)
-  useEffect(() => {
-    if (!monaco) return;
-
-    const updateMarkers = () => {
-      const allMarkers = monaco.editor.getModelMarkers({});
-      const newErrors: { [path: string]: number } = {};
-      let totalErrors = 0;
-      let totalWarnings = 0;
-
-      allMarkers.forEach(marker => {
-        const path = marker.resource.path;
-
-        if (marker.severity === monaco.MarkerSeverity.Error) {
-          newErrors[path] = (newErrors[path] || 0) + 1;
-          totalErrors++;
-        } else if (marker.severity === monaco.MarkerSeverity.Warning) {
-          totalWarnings++;
-        }
-      });
-
-      setFileErrors(newErrors);
-      if (onDiagnosticsChange) {
-        onDiagnosticsChange(totalErrors, totalWarnings, allMarkers);
-      }
-    };
-
-    const disposable = monaco.editor.onDidChangeMarkers(() => {
-      updateMarkers();
-    });
-
-    // Check periodically or on mount effectively
-    // Monaco markers might take time to compute.
-    const interval = setInterval(updateMarkers, 1000); // Polling as fallback/supplement
-
-    return () => {
-      disposable.dispose();
-      clearInterval(interval);
-    };
-  }, [monaco, onDiagnosticsChange]);
 
   // 파일 확장자로 언어 감지
   useEffect(() => {
@@ -391,49 +348,6 @@ function CodeEditor({
     setLanguage(langMap[ext || ''] || 'plaintext');
   }, [activeFile?.path]);
 
-  // Syntax Check (Python/C/C++ Linter)
-  useEffect(() => {
-    if (!monaco || !activeFile) return;
-
-    // 지원되는 언어만 린터 호출
-    const supportedLanguages = ['python', 'c', 'cpp'];
-    if (!supportedLanguages.includes(language)) return;
-
-    const checkSyntax = async () => {
-      try {
-        const issues = await window.electron.linter.check(activeFile.path);
-
-        // Map to Monaco markers
-        const markers = issues.map((issue: any) => ({
-          startLineNumber: issue.line,
-          startColumn: issue.column === 0 ? 1 : issue.column,
-          endLineNumber: issue.line,
-          endColumn: 1000, // Highlight whole line
-          message: `${issue.message} (${issue.messageId})`,
-          severity: issue.type === 'error' || issue.type === 'fatal'
-            ? monaco.MarkerSeverity.Error
-            : issue.type === 'warning'
-              ? monaco.MarkerSeverity.Warning
-              : monaco.MarkerSeverity.Info,
-          source: language === 'python' ? 'ruff' : 'gcc'
-        }));
-
-        // Find the correct model
-        const model = monaco.editor.getModels().find(m => m.uri.path === activeFile.path || m.uri.fsPath === activeFile.path) || monaco.editor.getModels()[0];
-        if (model) {
-          const source = language === 'python' ? 'ruff' : 'gcc';
-          monaco.editor.setModelMarkers(model, source, markers);
-        } else {
-          console.warn('Monaco model not found for:', activeFile.path);
-        }
-      } catch (e) {
-        console.error('Lint check failed:', e);
-      }
-    };
-
-    const timer = setTimeout(checkSyntax, 1000); // Debounce 1s
-    return () => clearTimeout(timer);
-  }, [activeFile?.content, activeFile?.path, activeFile?.isDirty, language, monaco]);
 
   const [editorInstance, setEditorInstance] = useState<any>(null);
 
@@ -658,11 +572,6 @@ function CodeEditor({
                   {getFileName(file.path)}
                   {file.isDiff && ' (Diff)'}
                   {file.isDirty && <span className="tab-dirty">●</span>}
-                  {fileErrors[file.path] > 0 && (
-                    <span className="tab-error-badge" title={`${fileErrors[file.path]} Errors`}>
-                      {fileErrors[file.path]}
-                    </span>
-                  )}
                 </span>
                 <button
                   className="tab-close"

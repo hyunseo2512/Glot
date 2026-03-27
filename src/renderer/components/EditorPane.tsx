@@ -15,7 +15,6 @@ interface EditorPaneProps {
     onSave: (index?: number) => void;
     settings: EditorSettings;
     onReorderTabs?: (fromIndex: number, toIndex: number) => void;
-    onDiagnosticsChange?: (errors: number, warnings: number, markers: any[]) => void;
     workspaceDir?: string;
     isActive: boolean;
     onFocus: () => void;
@@ -41,7 +40,6 @@ function EditorPane({
     onSave,
     settings,
     onReorderTabs,
-    onDiagnosticsChange,
     workspaceDir,
     isActive,
     onFocus,
@@ -79,7 +77,6 @@ function EditorPane({
                 onSave={onSave}
                 settings={settings}
                 onReorderTabs={onReorderTabs}
-                onDiagnosticsChange={onDiagnosticsChange}
                 workspaceDir={workspaceDir}
                 onMoveToOtherGroup={onMoveToOtherGroup}
                 moveDirection={moveDirection}
