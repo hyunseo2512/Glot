@@ -211,7 +211,7 @@ function setupIpcHandlers(): void {
         if (fs.existsSync(keyPath)) {
           config.privateKey = fs.readFileSync(keyPath, 'utf8');
         } else {
-          return { success: false, error: `키 파일을 찾을 수 없습니다: ${keyPath}` };
+          return { success: false, error: `Key file not found: ${keyPath}` };
         }
         delete config.privateKeyPath;
       }
@@ -671,7 +671,7 @@ function setupIpcHandlers(): void {
     if (terminals.has(terminalId)) {
       const existingProcess = terminals.get(terminalId);
       if (existingProcess) {
-        console.log(`🔄 Killing existing terminal process: ${terminalId}`);
+        console.log(`Killing existing terminal process: ${terminalId}`);
         try {
           existingProcess.kill();
         } catch (e) {
@@ -721,7 +721,7 @@ function setupIpcHandlers(): void {
           }
       }
 
-      console.log(`🚀 Starting PTY terminal ${terminalId} with shell: ${shell}`);
+      console.log(`Starting PTY terminal ${terminalId} with shell: ${shell}`);
 
       const args: string[] = [];
       if (initialCommand && shellType !== 'tmux') {
@@ -759,7 +759,7 @@ function setupIpcHandlers(): void {
       });
 
       ptyProcess.onExit((res: { exitCode: number, signal?: number }) => {
-        console.log(`🛑 Terminal ${terminalId} exited with code: ${res.exitCode}`);
+        console.log(`Terminal ${terminalId} exited with code: ${res.exitCode}`);
         terminals.delete(terminalId);
         const win = BrowserWindow.getFocusedWindow();
         win?.webContents.send('terminal:exit', terminalId, res.exitCode);
@@ -767,7 +767,7 @@ function setupIpcHandlers(): void {
 
       return { success: true, terminalId };
     } catch (error: any) {
-      console.error(`❌ Failed to start terminal ${terminalId}:`, error);
+      console.error(`Failed to start terminal ${terminalId}:`, error);
       terminals.delete(terminalId);
       return { success: false, error: error.message };
     }
@@ -1376,7 +1376,7 @@ function setupIpcHandlers(): void {
         args = [filePath];
     }
 
-    console.log(`🐛 Debug: Running ${command} ${args.join(' ')} in ${cwd}`);
+    console.log(`Debug: Running ${command} ${args.join(' ')} in ${cwd}`);
 
     try {
       const child = spawn(command, args, {
@@ -1518,7 +1518,7 @@ ipcMain.handle('chat:stream-start', async (event, streamId: string, url: string,
   const axios = require('axios');
   const https = require('https');
   try {
-    console.log(`🚀 Starting Chat Stream Proxy: ${streamId} -> ${url}`);
+    console.log(`Starting Chat Stream Proxy: ${streamId} -> ${url}`);
 
     const response = await axios({
       method: 'post',
@@ -1546,13 +1546,13 @@ ipcMain.handle('chat:stream-start', async (event, streamId: string, url: string,
     });
 
     stream.on('end', () => {
-      console.log(`✅ Chat Stream Ended: ${streamId}`);
+      console.log(`Chat Stream Ended: ${streamId}`);
       event.sender.send('chat:stream-end', streamId);
       activeStreams.delete(streamId);
     });
 
     stream.on('error', (err: any) => {
-      console.error(`❌ Chat Stream Error: ${streamId}`, err);
+      console.error(`Chat Stream Error: ${streamId}`, err);
       event.sender.send('chat:stream-error', streamId, err.message);
       activeStreams.delete(streamId);
     });

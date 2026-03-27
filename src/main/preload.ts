@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
-console.log('✅ Preload script loaded');
+console.log('Preload script loaded');
 
 /**
  * Electron API를 렌더러 프로세스에 안전하게 노출

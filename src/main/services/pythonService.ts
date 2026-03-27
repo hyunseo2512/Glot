@@ -16,8 +16,8 @@ export class PythonService {
     constructor() {
         this.isDev = !app.isPackaged;
         this.pythonPath = this.resolvePythonPath();
-        console.log('🐍 Python Service Initialized');
-        console.log('🐍 Python Path:', this.pythonPath);
+        console.log('Python Service Initialized');
+        console.log('Python Path:', this.pythonPath);
     }
 
     /**
@@ -39,7 +39,7 @@ export class PythonService {
 
         // fallback check if file exists, if not use system python (for safety in dev)
         if (!fs.existsSync(pythonPath) && this.isDev) {
-            console.warn('⚠️ Bundled Python not found in dev, falling back to system python3');
+            console.warn('Bundled Python not found in dev, falling back to system python3');
             return 'python3';
         }
 
