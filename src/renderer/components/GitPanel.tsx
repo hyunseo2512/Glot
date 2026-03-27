@@ -130,8 +130,8 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceDir, onFileClick }) => {
 
         setConfirmModal({
             isOpen: true,
-            title: '브랜치 변경',
-            message: `브랜치를 '${branchName}'(으)로 변경하시겠습니까?\n변경 사항이 있으면 실패할 수 있습니다.`,
+            title: 'Change Branch',
+            message: `Are you sure you want to change branch to '${branchName}'?\nUnsaved changes might cause failure.`,
             variant: 'primary',
             onConfirm: async () => {
                 setConfirmModal(prev => ({ ...prev, isOpen: false }));
@@ -160,7 +160,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceDir, onFileClick }) => {
                 window.electron.fs.readFile(filePath.startsWith('/') ? filePath : `${workspaceDir}/${filePath}`)
             ]);
 
-            const original = diffResult.success ? diffResult.original : '';
+            const original = diffResult.success ? (diffResult.original || '') : '';
             const modified = fileResult.success ? (fileResult.content || '') : '';
 
             setSelectedFileDiff({ path: filePath, original, modified });
@@ -200,8 +200,8 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceDir, onFileClick }) => {
             if (stagedFiles.length === 0) {
                 setConfirmModal({
                     isOpen: true,
-                    title: '모든 변경 사항 스테이지',
-                    message: '스테이지된 변경 사항이 없습니다.\n모든 변경 사항을 스테이지하고 커밋하시겠습니까?',
+                    title: 'Stage All Changes',
+                    message: 'There are no staged changes.\nWould you like to stage all changes and commit?',
                     variant: 'primary',
                     onConfirm: async () => {
                         setConfirmModal(prev => ({ ...prev, isOpen: false }));
@@ -312,7 +312,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceDir, onFileClick }) => {
 
     const handleInitRepo = () => {
         if (!workspaceDir) {
-            showNotification('폴더를 먼저 열어주세요', 'error');
+            showNotification('Please open a folder first', 'error');
             return;
         }
 
@@ -320,8 +320,8 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceDir, onFileClick }) => {
 
         setConfirmModal({
             isOpen: true,
-            title: 'Git 저장소 초기화',
-            message: `"${workspaceDir}"에 Git 저장소를 초기화하시겠습니까?`,
+            title: 'Initialize Git Repository',
+            message: `Do you want to initialize a Git repository in "${workspaceDir}"?`,
             variant: 'primary',
             onConfirm: async () => {
                 setConfirmModal(prev => ({ ...prev, isOpen: false }));
@@ -497,7 +497,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceDir, onFileClick }) => {
         return (
             <div className="git-panel empty">
                 <GitIcon size={48} className="git-icon-large" />
-                <p>폴더를 열어주세요.</p>
+                <p>Please open a folder.</p>
             </div>
         );
     }
@@ -508,10 +508,10 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceDir, onFileClick }) => {
                 <div className="git-panel empty" style={{ justifyContent: 'center', gap: '20px' }}>
                     <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
                         <GitIcon size={64} style={{ marginBottom: '16px', opacity: 0.5 }} />
-                        <h3 style={{ fontSize: '18px', marginBottom: '8px', color: 'var(--text-primary)' }}>Git 저장소가 아닙니다</h3>
+                        <h3 style={{ fontSize: '18px', marginBottom: '8px', color: 'var(--text-primary)' }}>Not a Git Repository</h3>
                         <p style={{ fontSize: '13px', maxWidth: '250px', margin: '0 auto 24px auto', lineHeight: '1.5' }}>
-                            현재 폴더는 Git으로 관리되고 있지 않습니다.<br />
-                            새로운 리포지토리를 초기화하여 버전 관리를 시작하세요.
+                            The current folder is not tracked by Git.<br />
+                            Initialize a new repository to start version control.
                         </p>
                         <button
                             onClick={handleInitRepo}
@@ -527,7 +527,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceDir, onFileClick }) => {
                                 fontWeight: 500
                             }}
                         >
-                            {isLoading ? '초기화 중...' : 'Initialize Repository'}
+                            {isLoading ? 'Initializing...' : 'Initialize Repository'}
                         </button>
                         <button
                             onClick={refreshStatus}
@@ -541,7 +541,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceDir, onFileClick }) => {
                                 fontSize: '12px'
                             }}
                         >
-                            다시 시도
+                            Try Again
                         </button>
                     </div>
                 </div>
@@ -589,7 +589,7 @@ const GitPanel: React.FC<GitPanelProps> = ({ workspaceDir, onFileClick }) => {
             <div className="git-header">
                 <h3>SOURCE CONTROL</h3>
                 <div className="git-actions">
-                    <button onClick={refreshStatus} title="새로고침" disabled={isLoading}>
+                    <button onClick={refreshStatus} title="Refresh" disabled={isLoading}>
                         <RotateCcwIcon size={14} />
                     </button>
                     <button onClick={handlePull} title="Pull" disabled={isLoading}>

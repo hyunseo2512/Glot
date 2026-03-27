@@ -244,7 +244,7 @@ function SettingsPanel({ onClose, onOpenSettingsJson, onApply }: SettingsPanelPr
     }
     await window.electron.store.set('ai_local_url', localUrl.trim());
     window.dispatchEvent(new CustomEvent('ai-settings-changed'));
-    showToast('AI 설정이 저장되었습니다.');
+    showToast('AI settings saved.');
   };
 
   const handleApplyAll = async () => {
@@ -302,7 +302,7 @@ function SettingsPanel({ onClose, onOpenSettingsJson, onApply }: SettingsPanelPr
   const handleGithubSave = async () => {
     await window.electron.store.set('github_username', githubSettings.username);
     await window.electron.store.set('github_token', githubSettings.token);
-    showToast('GitHub 설정이 저장되었습니다.');
+    showToast('GitHub settings saved.');
   };
 
   return (

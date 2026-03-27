@@ -45,7 +45,7 @@ export default function UpdateBanner() {
           <polyline points="21 16 21 21 16 21" />
           <line x1="15" y1="15" x2="21" y2="21" />
         </svg>
-        Glot <strong style={{ color: '#a8d8ea' }}>v{updateInfo.version}</strong> 업데이트가 있습니다
+        Glot <strong style={{ color: '#a8d8ea' }}>v{updateInfo.version}</strong> is available
       </span>
       <button
         onClick={handleOpenRelease}
@@ -60,11 +60,11 @@ export default function UpdateBanner() {
           lineHeight: '16px',
         }}
       >
-        릴리즈 노트 보기
+        View Release Notes
       </button>
       <button
         onClick={handleDismiss}
-        title="닫기"
+        title="Close"
         style={{
           background: 'none',
           border: 'none',

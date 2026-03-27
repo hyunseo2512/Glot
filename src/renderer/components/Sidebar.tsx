@@ -30,7 +30,7 @@ function Sidebar({ activeView, onViewChange, isSidePanelOpen, onToggleSidebar }:
       <button
         className={`sidebar-button ${activeView === 'explorer' && isSidePanelOpen ? 'active' : ''}`}
         onClick={() => handleViewClick('explorer')}
-        data-tooltip="탐색기 (Ctrl+B)"
+        data-tooltip="Explorer (Ctrl+B)"
         data-tooltip-pos="right"
       >
         <FolderIcon size={24} color="currentColor" />
@@ -38,7 +38,7 @@ function Sidebar({ activeView, onViewChange, isSidePanelOpen, onToggleSidebar }:
       <button
         className={`sidebar-button ${activeView === 'search' && isSidePanelOpen ? 'active' : ''}`}
         onClick={() => handleViewClick('search')}
-        data-tooltip="검색"
+        data-tooltip="Search"
         data-tooltip-pos="right"
       >
         <SearchIcon size={24} />
@@ -46,7 +46,7 @@ function Sidebar({ activeView, onViewChange, isSidePanelOpen, onToggleSidebar }:
       <button
         className={`sidebar-button ${activeView === 'git' && isSidePanelOpen ? 'active' : ''}`}
         onClick={() => handleViewClick('git')}
-        data-tooltip="소스 제어"
+        data-tooltip="Source Control"
         data-tooltip-pos="right"
       >
         <GitIcon size={24} />
@@ -54,7 +54,7 @@ function Sidebar({ activeView, onViewChange, isSidePanelOpen, onToggleSidebar }:
       <button
         className={`sidebar-button ${activeView === 'debug' && isSidePanelOpen ? 'active' : ''}`}
         onClick={() => handleViewClick('debug')}
-        data-tooltip="실행 및 디버그 (Ctrl+Shift+D)"
+        data-tooltip="Run and Debug (Ctrl+Shift+D)"
         data-tooltip-pos="right"
       >
         <BugIcon size={24} />

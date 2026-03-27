@@ -332,7 +332,7 @@ function App() {
   const [zoomLevel, setZoomLevel] = useState(1.1);
   const [shortcuts, setShortcuts] = useState<KeyBinding[]>(DEFAULT_SHORTCUTS);
 
-  // 단축키 로드
+  // Load Shortcuts
   const loadShortcuts = async () => {
     const saved = await window.electron.store.get('key_bindings');
     if (saved.success && Array.isArray(saved.value)) {
@@ -350,7 +350,7 @@ function App() {
 
 
 
-  // 워크스페이스 존재 여부 감시 (3초마다) — 원격 모드에서는 스킵
+  // Monitor workspace existence (every 3 seconds) — Skip in remote mode
   useEffect(() => {
     if (!workspaceDir || isRemoteWorkspace) return;
 
@@ -358,7 +358,7 @@ function App() {
       try {
         const result = await window.electron.fs.exists(workspaceDir);
         if (result.success && !result.exists) {
-          setAlertMessage(`프로젝트 디렉토리 '${workspaceDir}'를 찾을 수 없습니다.\n삭제되었거나 이동되었을 수 있습니다.`);
+          setAlertMessage(`Project directory '${workspaceDir}' not found.\nIt may have been deleted or moved.`);
           setTimeout(() => window.location.reload(), 3000);
         }
       } catch (error) {
@@ -370,7 +370,7 @@ function App() {
     return () => clearInterval(interval);
   }, [workspaceDir, isRemoteWorkspace]);
 
-  // 메뉴 외부 클릭 시 닫기
+  // Close on click outside menu
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -398,26 +398,26 @@ function App() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [fileMenuOpen, editMenuOpen, runMenuOpen, helpMenuOpen, viewMenuOpen, zoomMenuOpen]);
 
-  // 크기 상태
+  // Size State
   const [sidePanelWidth, setSidePanelWidth] = useState(300);
   const [aiPanelWidth, setAIPanelWidth] = useState(400);
   const [terminalHeight, setTerminalHeight] = useState(250);
   const [isTerminalMaximized, setIsTerminalMaximized] = useState(false);
   const prevTerminalHeightRef = useRef<number>(250);
 
-  // 사이드바 토글 핸들러 (버튼과 단축키에서 공통 사용)
+  // Sidebar Toggle Handler (common for button and shortcut)
   const toggleSidebar = () => {
-    console.log('🔄 사이드바 토글 실행');
+    console.log('🔄 Executing sidebar toggle');
     setIsSidePanelOpen((prev) => {
-      console.log('사이드바 상태:', prev, '→', !prev);
+      console.log('Sidebar state:', prev, '→', !prev);
       return !prev;
     });
   };
 
-  // 반응형 처리: 창 크기가 작아지면 AI 패널 자동 닫기
+  // Responsive handling: Auto close AI panel if window size is small
   useEffect(() => {
     const handleResize = () => {
-      // 1000px 미만이고 AI 패널이 열려있으면 닫기
+      // If less than 1000px and AI panel is open, close it
       if (window.innerWidth < 1000 && isAIPanelOpen) {
         setIsAIPanelOpen(false);
       }
@@ -499,8 +499,10 @@ function App() {
           // Open current file in secondary group
           if (activeGroup === 'primary' && primaryActiveIndex !== -1) {
             const currentFile = primaryFiles[primaryActiveIndex];
-            setSecondaryFiles([currentFile]);
-            setSecondaryActiveIndex(0);
+            if (currentFile) {
+              setSecondaryFiles([currentFile]);
+              setSecondaryActiveIndex(0);
+            }
           }
           setIsSplitView(true);
           setActiveGroup('secondary');
@@ -521,9 +523,9 @@ function App() {
     return () => window.removeEventListener('keydown', handleGlobalKeydown);
   }, [activeFileIndex, openFiles, activeGroup, isSplitView, primaryFiles, secondaryFiles, primaryActiveIndex, secondaryActiveIndex]);
 
-  // 파일 열기 핸들러 (탭 추가)
+  // File Open Handler (add tab)
   const handleFileOpen = async (filePath: string) => {
-    // 파일 열기 시 웰컴 스크린 강제 표시 해제
+    // Disable force show welcome screen on file open
     setForceShowWelcome(false);
 
     if (!window.electron?.fs?.readFile) {
@@ -561,9 +563,9 @@ function App() {
           }
         }
 
-        console.log('✅ 파일 열기 성공:', filePath);
+        console.log('✅ File open successful:', filePath);
       } else {
-        console.error('파일 읽기 실패:', result.error);
+        console.error('File read failed:', result.error);
       }
     } catch (error) {
       console.error('Failed to read file:', error);
@@ -615,10 +617,10 @@ function App() {
     }
   };
 
-  // 파일 저장 핸들러 (Legacy wrapper for commands)
+  // File Save Handler (Legacy wrapper for commands)
   const handleFileSave = async (index: number = activeFileIndex) => {
     if (index === -1) {
-      console.warn('저장할 파일이 선택되지 않았습니다');
+      console.warn('No file selected to save');
       return;
     }
 
@@ -633,11 +635,11 @@ function App() {
     try {
       let filePath = fileToSave.path;
 
-      // untitled 파일이면 저장 다이얼로그 표시
+      // If untitled file, show save dialog
       if (filePath.startsWith('untitled-')) {
         const savePath = await showFileBrowser('saveFile');
         if (!savePath) {
-          return; // 사용자가 취소함
+          return; // User cancelled
         }
         filePath = savePath;
       }
@@ -647,24 +649,24 @@ function App() {
         : await window.electron.fs.writeFile(filePath, fileToSave.content);
 
       if (result.success) {
-        // isDirty 플래그 제거 및 경로 업데이트
+        // Remove isDirty flag and update path
         const updatedFiles = [...openFiles];
         updatedFiles[index] = {
           ...fileToSave,
-          path: filePath, // 새 경로로 업데이트
+          path: filePath, // Update to new path
           isDirty: false
         };
         setOpenFiles(updatedFiles);
-        console.log('✅ 파일 저장 성공:', filePath);
+        console.log('✅ File save successful:', filePath);
       } else {
-        console.error('❌ 파일 저장 실패:', result.error);
+        console.error('❌ File save failed:', result.error);
       }
     } catch (error) {
       console.error('Failed to save file:', error);
     }
   };
 
-  // 모든 변경된 파일 저장 (Primary & Secondary)
+  // Save All Modified Files (Primary & Secondary)
   const handleSaveAll = async () => {
     let hasChanges = false;
     let newPrimaryFiles = [...primaryFiles];
@@ -722,11 +724,11 @@ function App() {
     return false;
   };
 
-  // 새 파일 생성 핸들러
+  // New File Creation Handler
   const handleNewFile = () => {
     if (fileMenuOpen) setFileMenuOpen(false);
 
-    // untitled 이름 생성 (기존 파일들과 겹치지 않게)
+    // Generate untitled name (avoiding overlap with existing files)
     let counter = 1;
     while (openFiles.some(f => f.path === `untitled-${counter}`)) {
       counter++;
@@ -736,7 +738,7 @@ function App() {
     const newFile: OpenFile = {
       path: untitledPath,
       content: '',
-      isDirty: true // 저장되지 않은 상태로 표시
+      isDirty: true // Mark as unsaved
     };
 
     const targetSetFiles = activeGroup === 'primary' ? setPrimaryFiles : setSecondaryFiles;
@@ -747,7 +749,7 @@ function App() {
     targetSetActiveIndex(targetFiles.length);
   };
 
-  // 새 창 생성 핸들러
+  // New Window Creation Handler
   const handleNewWindow = async () => {
     if (fileMenuOpen) setFileMenuOpen(false);
     if (!window.electron?.window?.create) {
@@ -763,7 +765,7 @@ function App() {
 
 
 
-  // 파일 내용 변경 핸들러
+  // File Content Change Handler
   const handlePrimaryContentChange = (content: string) => {
     if (primaryActiveIndex === -1) return;
     const newFiles = [...primaryFiles];
@@ -780,7 +782,7 @@ function App() {
 
 
 
-  // 변경사항 확인 및 저장 여부 묻기
+  // Check for changes and ask to save
   const checkUnsavedChanges = async (filesToCheck: OpenFile[]): Promise<boolean> => {
     const dirtyFiles = filesToCheck.filter(f => f.isDirty);
     if (dirtyFiles.length === 0) return true;
@@ -813,7 +815,7 @@ function App() {
     }
   };
 
-  // 탭 닫기
+  // Close Tab
   const handleCloseTab = async (index: number) => {
     // Determine which group's files to operate on
     const currentFiles = activeGroup === 'primary' ? primaryFiles : secondaryFiles;
@@ -843,7 +845,7 @@ function App() {
     // If a tab after the active tab is closed, active index remains the same
   };
 
-  // 다른 탭 닫기
+  // Close Other Tabs
   // Internal close helpers
   const handleCloseOthersInternal = async (index: number, group: 'primary' | 'secondary') => {
     const files = group === 'primary' ? primaryFiles : secondaryFiles;
@@ -889,18 +891,18 @@ function App() {
     setActiveIndex(-1);
   };
 
-  // 파일 삭제 시 탭 닫기 핸들러 (강제 닫기)
+  // File Delete Tab Close Handler (force close)
   const handleFileDelete = (deletedPath: string) => {
-    // 삭제된 파일 또는 폴더 하위 파일 찾기
+    // Find deleted file or sub-files of folder
     const filesToKeep = openFiles.filter(f =>
       f.path !== deletedPath && !f.path.startsWith(deletedPath + '/')
     );
 
     if (filesToKeep.length !== openFiles.length) {
-      // 닫히는 파일이 있음
+      // Files are being closed
       let newActiveIndex = activeFileIndex;
 
-      // 현재 활성 탭의 경로
+      // Path of currently active tab
       const currentActivePath = activeFileIndex >= 0 && activeFileIndex < openFiles.length
         ? openFiles[activeFileIndex].path
         : null;
@@ -908,12 +910,12 @@ function App() {
       if (filesToKeep.length === 0) {
         newActiveIndex = -1;
       } else if (currentActivePath) {
-        // 활성 탭이 살아남았는지 확인
+        // Check if active tab survived
         const newIndex = filesToKeep.findIndex(f => f.path === currentActivePath);
         if (newIndex !== -1) {
           newActiveIndex = newIndex;
         } else {
-          // 활성 탭이 삭제됨 -> 마지막 탭 또는 적절한 위치
+          // Active tab deleted -> last tab or appropriate position
           newActiveIndex = Math.min(activeFileIndex, filesToKeep.length - 1);
         }
       } else {
@@ -937,7 +939,7 @@ function App() {
     const [movedFile] = updatedFiles.splice(fromIndex, 1);
     updatedFiles.splice(toIndex, 0, movedFile);
 
-    // activeFileIndex 조정
+    // Adjust activeFileIndex
     const currentActive = files[activeIndex];
     if (currentActive) {
       const newIndex = updatedFiles.findIndex(f => f.path === currentActive.path);
@@ -985,14 +987,13 @@ function App() {
     // 3. Ensure split view is visible if moving from primary to secondary
     if (group === 'primary' && !isSplitView) {
       setIsSplitView(true);
-      // Optional: set default ratio if not set? 
+      // Optional: set default ratio if not set?
       if (editorSplitRatio < 0.1 || editorSplitRatio > 0.9) setEditorSplitRatio(0.5);
     }
   };
 
 
-  // 단축키 핸들러
-  // 줌 적용 헬퍼
+  // Zoom Application Helper
   const BASE_ZOOM = 1.1; // Default 110% as new 100%
   const ZOOM_STEP = 0.1;
   const MIN_ZOOM = Number((BASE_ZOOM - (ZOOM_STEP * 4)).toFixed(1)); // 0.7
@@ -1006,12 +1007,12 @@ function App() {
     }
   };
 
-  // 초기 줌 설정
+  // Initial Zoom Setting
   useEffect(() => {
     applyZoom(BASE_ZOOM);
   }, []);
 
-  // 단축키 핸들러
+  // Shortcut Handler
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const modifiers = [];
@@ -1031,16 +1032,16 @@ function App() {
       const binding = shortcuts.find(s => s.currentKey === combo);
       if (!binding) return;
 
-      // 터미널 포커스 시 충돌하는 단축키 예외 처리 (Tmux Ctrl+B 등)
+      // Shortcut conflict exception handling when terminal is focused (e.g., Tmux Ctrl+B)
       const isTerminalFocused = document.activeElement?.className.includes('xterm-helper-textarea');
       if (isTerminalFocused) {
-        // 사이드바 토글(Ctrl+B)은 터미널로 통과시킴
+        // Sidebar toggle (Ctrl+B) is passed through to terminal
         if (binding.command === 'toggleSidebar') return;
 
-        // 필요하다면 다른 충돌 키도 여기서 예외 처리 가능
+        // Other conflicting keys can also be handled here if necessary
       }
 
-      // 앱 레벨에서 직접 처리하는 명령만 Monaco 이벤트 차단
+      // Block Monaco events only for commands handled directly at app level
       const appLevelCommands = new Set([
         'toggleSidebar', 'toggleTerminal', 'toggleAIPanel',
         'saveFile', 'saveAllFiles', 'zoomIn', 'zoomOut', 'zoomReset', 'revealInExplorer',
@@ -1052,7 +1053,7 @@ function App() {
         e.preventDefault();
         e.stopImmediatePropagation();
       }
-      // 나머지 (find, replace, commentLine 등)는 Monaco가 자체 처리
+      // The rest (find, replace, commentLine, etc.) are handled by Monaco itself
 
       switch (binding.command) {
         case 'toggleSidebar':
@@ -1061,12 +1062,12 @@ function App() {
         case 'toggleTerminal':
           setIsTerminalOpen(prev => {
             if (!prev) {
-              // 열기 → 터미널 포커스
+              // Open → Focus terminal
               setTimeout(() => {
                 window.dispatchEvent(new CustomEvent('terminal-focus'));
               }, 100);
             } else {
-              // 닫기 → 에디터 포커스
+              // Close → Focus editor
               setTimeout(() => {
                 const editor = document.querySelector('.monaco-editor textarea') as HTMLElement;
                 if (editor) editor.focus();
@@ -1080,11 +1081,11 @@ function App() {
           const isPromptFocused = promptEl && document.activeElement === promptEl;
 
           if (!isAIPanelOpen) {
-            // 1단계: 패널 닫힘 → 열기
+            // Step 1: Panel closed → Open
             setIsAIPanelOpen(true);
             aiPromptVisited.current = false;
           } else if (isAIPanelOpen && !isPromptFocused && !aiPromptVisited.current) {
-            // 2단계: 패널 열림 + 프롬프트 미방문 → 포커스
+            // Step 2: Panel open + prompt not visited → Focus
             if (promptEl) {
               promptEl.focus();
               aiPromptVisited.current = true;
@@ -1093,10 +1094,10 @@ function App() {
               aiPromptVisited.current = false;
             }
           } else if (isAIPanelOpen && isPromptFocused) {
-            // 3단계: 프롬프트 포커스 → 블러
+            // Step 3: Prompt focused → Blur
             promptEl.blur();
           } else if (isAIPanelOpen && !isPromptFocused && aiPromptVisited.current) {
-            // 4단계: 프롬프트 방문 후 블러 상태 → 닫기
+            // Step 4: After visiting prompt and blurred → Close
             setIsAIPanelOpen(false);
             aiPromptVisited.current = false;
           }
@@ -1116,7 +1117,7 @@ function App() {
           break;
         }
         case 'newFile': {
-          // Untitled 파일 번호 계산
+          // Calculate Untitled file number
           const untitledNums = openFiles
             .map(f => f.path.match(/^Untitled-(\d+)$/)?.[1])
             .filter(Boolean)
@@ -1134,15 +1135,15 @@ function App() {
         case 'openFile': {
           (async () => {
             try {
-              // OS 파일 관리자 사용
+              // Use OS file manager
               const result = await window.electron.dialog.openFile();
               const filePath = result.success && result.path ? result.path : null;
 
-              // [GLOT_FILEBROWSER] 기존 Glot 전용 파일 브라우저 코드 (주석 처리)
+              // [GLOT_FILEBROWSER] Existing Glot-specific file browser code (commented out)
               // const filePath = await showFileBrowser('selectFile');
 
               if (!filePath) return;
-              // 이미 열려있으면 활성화
+              // If already open, activate
               const existingIdx = openFiles.findIndex(f => f.path === filePath);
               if (existingIdx !== -1) {
                 setActiveFileIndex(existingIdx);
@@ -1180,7 +1181,7 @@ function App() {
           applyZoom(BASE_ZOOM);
           break;
         case 'revealInExplorer': {
-          // 에디터 포커스 해제
+          // Unfocus editor
           if (document.activeElement instanceof HTMLElement) {
             document.activeElement.blur();
           }
@@ -1226,16 +1227,16 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [shortcuts, handleFileSave, zoomLevel, activeFileIndex, openFiles, isAIPanelOpen]);
 
-  // Ctrl+W 탭 닫기 (main process에서 커스텀 이벤트로 전달)
+  // Ctrl+W Close Tab (sent as custom event from main process)
   useEffect(() => {
     const handleCloseActiveTab = () => {
-      // 터미널에 포커스가 있으면 터미널 탭 닫기
+      // If terminal is focused, close terminal tab
       const terminalContainer = document.querySelector('.terminal-container');
       if (terminalContainer && terminalContainer.contains(document.activeElement)) {
         window.dispatchEvent(new CustomEvent('terminal-close-tab'));
         return;
       }
-      // 에디터 탭 닫기
+      // Close editor tab
       if (activeFileIndex >= 0 && openFiles[activeFileIndex]) {
         const file = openFiles[activeFileIndex];
         if (!file.isDirty) {
@@ -1250,14 +1251,14 @@ function App() {
     window.addEventListener('close-active-tab', handleCloseActiveTab);
     return () => window.removeEventListener('close-active-tab', handleCloseActiveTab);
   }, [activeFileIndex, openFiles]);
-  // 터미널 최대화 토글
+  // Toggle Terminal Maximize
   const handleToggleTerminalMaximize = () => {
     if (isTerminalMaximized) {
-      // 복원
+      // Restore
       setIsTerminalMaximized(false);
       setTerminalHeight(prevTerminalHeightRef.current);
     } else {
-      // 최대화
+      // Maximize
       prevTerminalHeightRef.current = terminalHeight;
       setIsTerminalMaximized(true);
       const maxHeight = window.innerHeight - 57; // Header(35) + Footer(22)
@@ -1265,7 +1266,7 @@ function App() {
     }
   };
 
-  // 파일 언어 감지
+  // Detect File Language
   const getFileLanguage = (filePath: string): string => {
     const ext = filePath.split('.').pop()?.toLowerCase();
     const langMap: { [key: string]: string } = {
@@ -1290,16 +1291,16 @@ function App() {
     return langMap[ext || ''] || 'Plain Text';
   };
 
-  // 최근 프로젝트 목록
+  // Recent Projects List
   const [recentProjects, setRecentProjects] = useState<string[]>([]);
 
-  // 초기 설정 및 최근 프로젝트 로드
+  // Initial Setup and Load Recent Projects
   useEffect(() => {
     const loadSettings = async () => {
       if (window.electron && window.electron.store) {
-        // ... 기존 설정 로드 로직이 있다면 여기 통합 ...
+        // ... Integrate existing settings load logic here ...
 
-        // 최근 프로젝트 로드
+        // Load Recent Projects
         const recentsResult = await window.electron.store.get('recents');
         if (recentsResult.success && Array.isArray(recentsResult.value)) {
           setRecentProjects(recentsResult.value);
@@ -1309,7 +1310,7 @@ function App() {
     loadSettings();
   }, []);
 
-  // 최근 프로젝트 추가 헬퍼
+  // Helper to add to recents
   const addToRecents = async (path: string) => {
     const newRecents = [path, ...recentProjects.filter(p => p !== path)].slice(0, 10);
     setRecentProjects(newRecents);
@@ -1318,35 +1319,36 @@ function App() {
     }
   };
 
-  // 현재 Git 브랜치 가져오기
+  // Get Current Git Branch
+  const fetchBranch = async () => {
+    if (!workspaceDir) {
+      setCurrentBranch('');
+      return;
+    }
+    try {
+      const result = await window.electron.git.status(workspaceDir);
+      if (result.success && result.status?.current) {
+        setCurrentBranch(result.status.current);
+      } else {
+        setCurrentBranch('');
+      }
+    } catch {
+      setCurrentBranch('');
+    }
+  };
+
   useEffect(() => {
-    const fetchBranch = async () => {
-      if (!workspaceDir) {
-        setCurrentBranch('');
-        return;
-      }
-      try {
-        const result = await window.electron.git.status(workspaceDir);
-        if (result.success && result.status?.current) {
-          setCurrentBranch(result.status.current);
-        } else {
-          setCurrentBranch('');
-        }
-      } catch {
-        setCurrentBranch('');
-      }
-    };
     fetchBranch();
   }, [workspaceDir]);
 
   // ... (shortcuts useEffect 등 다른 코드 유지)
 
-  // 폴더 열기 핸들러
+  // Open Folder Handler
   const handleOpenFolder = async () => {
     try {
-      // 원격 워크스페이스는 기존 InAppFileBrowser 유지
+      // Remote workspace maintains existing InAppFileBrowser
       if (isRemoteWorkspace) {
-        // [GLOT_FILEBROWSER] 원격 파일 브라우저 (SFTP)
+        // [GLOT_FILEBROWSER] Remote File Browser (SFTP)
         const remoteInitialPath = workspaceDir || (remoteUser ? `/home/${remoteUser}` : '/');
         const selectedPath = await showFileBrowser('selectFolder', true, remoteInitialPath);
         if (selectedPath) {
@@ -1354,7 +1356,7 @@ function App() {
           setIsSidePanelOpen(true);
         }
       } else {
-        // 로컬: OS 파일 관리자 사용
+        // Local: Use OS file manager
         const result = await window.electron.dialog.openDirectory();
         if (result.success && result.path) {
           setWorkspaceDir(result.path);
@@ -1362,7 +1364,7 @@ function App() {
           addToRecents(result.path);
         }
 
-        // [GLOT_FILEBROWSER] 기존 Glot 전용 파일 브라우저 코드 (주석 처리)
+        // [GLOT_FILEBROWSER] Existing Glot-specific file browser code (commented out)
         // const selectedPath = await showFileBrowser('selectFolder', false, undefined);
         // if (selectedPath) {
         //   setWorkspaceDir(selectedPath);
@@ -1376,16 +1378,16 @@ function App() {
     setFileMenuOpen(false);
   };
 
-  // 최근 프로젝트 열기 핸들러
+  // Open Recent Project Handler
   const handleOpenRecent = (path: string) => {
     setWorkspaceDir(path);
     setIsSidePanelOpen(true);
-    addToRecents(path); // 순서 갱신 (맨 위로)
+    addToRecents(path); // Update order (to top)
   };
 
-  // 최근 프로젝트 삭제 핸들러
+  // Remove Recent Project Handler
   const handleRemoveRecent = async (path: string) => {
-    // 이벤트 전파 방지를 위해 상위 컴포넌트에서 처리하거나, 여기서 처리 확인
+    // To prevent event propagation, handle in parent component or confirm handling here
     const newRecents = recentProjects.filter(p => p !== path);
     setRecentProjects(newRecents);
     if (window.electron && window.electron.store) {
@@ -1449,7 +1451,7 @@ function App() {
     }
   }, [isSplitView, primaryFiles.length, secondaryFiles.length]);
 
-  // 파일 열기 핸들러
+  // File Open Handler
   const handleOpenFileDialog = async () => {
     if (!window.electron?.dialog?.openFile) {
       console.error('Electron dialog API not available');
@@ -1460,7 +1462,7 @@ function App() {
       const result = await window.electron.dialog.openFile();
 
       if (result.success && result.path) {
-        // 선택한 파일만 열기 (디렉토리는 워크스페이스로 설정하지 않음)
+        // Open only selected file (do not set directory as workspace)
         await handleFileOpen(result.path);
       }
     } catch (error) {
@@ -1468,12 +1470,12 @@ function App() {
     }
     setFileMenuOpen(false);
   };
-  // SSH 연결 핸들러
+  // SSH Connection Handler
   const handleSSHConnect = async (config: any) => {
     try {
       const result = await window.electron.ssh.connect(config);
       if (result.success) {
-        // SFTP 세션 자동 시작
+        // SFTP session auto start
         const sftpResult = await window.electron.sftp.start();
         if (sftpResult.success) {
           console.log('SFTP session started');
@@ -1481,7 +1483,7 @@ function App() {
         setIsSSHModalOpen(false);
         setRemoteUser(config.username);
 
-        // 원격 폴더 선택 브라우저 열기
+        // Open remote folder selection browser
         const remotePath = await showFileBrowser('selectFolder', true, `/home/${config.username}`);
         if (remotePath) {
           setIsRemoteWorkspace(true);
@@ -1491,34 +1493,44 @@ function App() {
           setActiveFileIndex(-1);
         }
 
-        // 터미널 열기 (TerminalPanel이 마운트 시 자동으로 cd remoteCwd 실행)
+        // Open terminal (TerminalPanel automatically executes cd remoteCwd on mount)
         if (!isTerminalOpen) {
           setIsTerminalOpen(true);
         }
       } else {
-        setAlertMessage(`SSH 연결 실패: ${result.error}`);
+        setAlertMessage(`SSH Connection failed: ${result.error}`);
       }
     } catch (err: any) {
-      setAlertMessage(`오류: ${err.message}`);
+      setAlertMessage(`Error: ${err.message}`);
     }
   };
 
+  const doDisconnectSSH = async () => {
+    setIsRemoteWorkspace(false);
+    setWorkspaceDir(null);
+    setOpenFiles([]);
+    setActiveFileIndex(-1);
+    setDiagnostics({ errors: 0, warnings: 0, markers: [] });
+    setRemoteUser('');
+    setIsTerminalOpen(false);
+    window.dispatchEvent(new Event('terminal-close-all'));
+    await window.electron.ssh.disconnect();
+  };
 
 
-
-  // 프로젝트 닫기 핸들러
+  // Close Project Handler
   const handleCloseProject = async () => {
-    // 저장되지 않은 파일이 있으면 확인
+    // Check if there are unsaved files
     if (openFiles.some(f => f.isDirty)) {
       if (!await checkUnsavedChanges(openFiles)) return;
       doCloseProject();
     } else {
-      // 저장할 게 없으면 모달로 확인
+      // If nothing to save, confirm with modal
       setShowCloseProjectModal(true);
     }
   };
 
-  // 실제 프로젝트 닫기 실행
+  // Execute actual project close
   const doCloseProject = () => {
     setWorkspaceDir(null);
     setOpenFiles([]);
@@ -1531,7 +1543,7 @@ function App() {
   // Run Project Logic
   const handleRunProject = () => {
     if (activeFileIndex < 0 || !openFiles[activeFileIndex]) {
-      setAlertMessage("실행할 파일이 없습니다. 파일을 먼저 열어주세요.");
+      setAlertMessage("No file to run. Please open a file first.");
       return;
     }
     const currentFile = openFiles[activeFileIndex];
@@ -1582,7 +1594,7 @@ function App() {
         }));
       }, 100);
     } else {
-      setAlertMessage("현재 디버깅은 Python 파일(.py)만 지원합니다.");
+      setAlertMessage("Debugging is currently only supported for Python (.py) files.");
     }
   };
 
@@ -1993,9 +2005,9 @@ function App() {
       )
       }
 
-      {/* 메인 컨텐츠 영역 */}
+      {/* Main Content Area */}
       <div className="app-body">
-        {/* 왼쪽 액티비티 바 */}
+        {/* Left Activity Bar */}
         <Sidebar
           activeView={sidebarView}
           onViewChange={setSidebarView}
@@ -2029,7 +2041,7 @@ function App() {
               />
             ) : (
               <div className="panel-placeholder">
-                <p>오픈된 폴더가 없습니다.</p>
+                <p>No folder opened.</p>
               </div>
             )
           )}
@@ -2039,14 +2051,14 @@ function App() {
             ) : (
               <div className="panel-placeholder">
                 <SearchIcon size={48} />
-                <p>폴더를 열어주세요.</p>
+                <p>Please open a folder.</p>
               </div>
             )
           )}
           {sidebarView === 'git' && (
             isRemoteWorkspace ? (
               <div className="panel-placeholder">
-                <p>원격 워크스페이스에서는 소스 제어를 사용할 수 없습니다.</p>
+                <p>Source control is not available in remote workspaces.</p>
               </div>
             ) : workspaceDir ? (
               <GitPanel
@@ -2055,7 +2067,7 @@ function App() {
               />
             ) : (
               <div className="panel-placeholder">
-                <p>Git 저장소가 아닙니다.</p>
+                <p>Not a Git repository.</p>
               </div>
             )
           )}
@@ -2072,14 +2084,14 @@ function App() {
 
         </div>
 
-        {/* 리사이저 - 항상 표시 */}
+        {/* Resizer - always visible */}
         {isSidePanelOpen && (
           <Resizer
             direction="horizontal"
             onResize={(delta) => {
               setSidePanelWidth((prev) => {
                 const newWidth = prev + delta;
-                // 150px 이하로 줄어들면 사이드바 자동 접기
+                // Auto-collapse sidebar if width drops below 150px
                 if (newWidth < 150) {
                   setIsSidePanelOpen(false);
                   return prev;
@@ -2090,10 +2102,10 @@ function App() {
           />
         )}
 
-        {/* 중앙 에디터 영역 및 터미널 (수직 배치) */}
+        {/* Central Editor Area and Terminal (vertical layout) */}
         <div className="main-content-column" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-          {/* 상단 뷰 (WelcomeScreen 또는 CodeEditor) */}
+          {/* Top View (WelcomeScreen or CodeEditor) */}
           <div style={{
             flex: 1,
             overflow: 'hidden',
@@ -2200,13 +2212,13 @@ function App() {
 
           {/* Secondary pane handling if needed, but primary is key */}
 
-          {/* 하단 터미널 - 글로벌 영역 (Ctrl+J로 토글) - display:none으로 숨기기 (세션 유지) */}
-          {/* 하단 터미널 - 글로벌 영역 (Ctrl+J로 토글) */}
+          {/* Bottom Terminal - Global Area (Toggle with Ctrl+J) - Hide with display:none (session maintained) */}
+          {/* Bottom Terminal - Global Area (Toggle with Ctrl+J) */}
           <div style={{
             display: isTerminalOpen ? 'flex' : 'none',
             flexDirection: 'column',
             height: isTerminalMaximized ? '100%' : `${terminalHeight}px`,
-            flexShrink: 0, // 중요: 에디터가 줄어들게 함
+            flexShrink: 0, // Important: allows editor to shrink
             borderTop: isTerminalMaximized ? 'none' : '1px solid var(--border-color)',
             backgroundColor: 'var(--bg-primary)',
             position: 'relative',
@@ -2251,7 +2263,7 @@ function App() {
 
         </div>
 
-        {/* 오른쪽 AI 패널 (Ctrl+L로 토글) */}
+        {/* Right AI Panel (Toggle with Ctrl+L) */}
         <div style={{ display: 'flex' }}>
           <div style={{
             width: isAIPanelOpen ? '4px' : '0px',
@@ -2292,10 +2304,10 @@ function App() {
         </div>
       </div>
 
-      {/* 하단 상태바 */}
+      {/* Bottom Status Bar */}
       <footer className="app-footer">
         <div className="status-left">
-          <div className="remote-button" onClick={() => isRemoteWorkspace ? setDisconnectConfirmOpen(true) : setIsSSHModalOpen(true)} data-tooltip={isRemoteWorkspace ? `Remote: ${remoteUser} (클릭으로 연결 해제)` : 'SSH Connection'} data-tooltip-pos="top">
+          <div className="remote-button" onClick={() => isRemoteWorkspace ? setDisconnectConfirmOpen(true) : setIsSSHModalOpen(true)} data-tooltip={isRemoteWorkspace ? `Remote: ${remoteUser} (Click to disconnect)` : 'SSH Connection'} data-tooltip-pos="top">
             <ActivityIcon size={14} />
             {isRemoteWorkspace && <span style={{ marginLeft: '4px', fontSize: '11px' }}>Remote</span>}
           </div>
@@ -2341,7 +2353,7 @@ function App() {
                     e.stopPropagation();
                     applyZoom(zoomLevel - 0.1);
                   }}
-                  data-tooltip="축소"
+                  data-tooltip="Zoom Out"
                   data-tooltip-pos="top"
                 >
                   <MinusIcon size={14} />
@@ -2360,7 +2372,7 @@ function App() {
                     e.stopPropagation();
                     applyZoom(zoomLevel + 0.1);
                   }}
-                  data-tooltip="확대"
+                  data-tooltip="Zoom In"
                   data-tooltip-pos="top"
                 >
                   <PlusIcon size={14} />
@@ -2374,7 +2386,7 @@ function App() {
                     e.stopPropagation();
                     applyZoom(1.0);
                   }}
-                  data-tooltip="초기화"
+                  data-tooltip="Reset Zoom"
                   data-tooltip-pos="top"
                 >
                   Reset
@@ -2383,7 +2395,7 @@ function App() {
             )}
             <div
               onClick={() => setZoomMenuOpen(!zoomMenuOpen)}
-              data-tooltip="화면 확대/축소"
+              data-tooltip="Screen Zoom"
               data-tooltip-pos="top"
               style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
             >
@@ -2472,30 +2484,30 @@ function App() {
         )
       }
 
-      {/* 프로젝트 닫기 확인 모달 */}
+      {/* Close project confirmation modal */}
       {showCloseProjectModal && (
         <div className="modal-overlay" onClick={() => setShowCloseProjectModal(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3>프로젝트 닫기</h3>
-            <p>프로젝트를 닫으시겠습니까?</p>
+            <h3>Close Project</h3>
+            <p>Are you sure you want to close the project?</p>
             <div className="modal-actions" style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px' }}>
-              <button className="modal-btn cancel" onClick={() => setShowCloseProjectModal(false)}>취소</button>
-              <button className="modal-btn primary" onClick={doCloseProject}>닫기</button>
+              <button className="modal-btn cancel" onClick={() => setShowCloseProjectModal(false)}>Cancel</button>
+              <button className="modal-btn primary" onClick={doCloseProject}>Close</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 연결 해제 확인 모달 */}
+      {/* Disconnect confirmation modal */}
       {disconnectConfirmOpen && (
         <div className="modal-overlay" onClick={() => setDisconnectConfirmOpen(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
-            <h3 style={{ margin: '0 0 12px 0' }}>SSH 연결 해제</h3>
+            <h3 style={{ margin: '0 0 12px 0' }}>Disconnect SSH</h3>
             <p style={{ margin: '0 0 16px 0', lineHeight: '1.5', color: '#a6adc8' }}>
-              {remoteUser}@{workspaceDir} 연결을 해제하시겠습니까?
+              Are you sure you want to disconnect {remoteUser}@{workspaceDir}?
             </p>
             <div className="modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-              <button className="modal-btn cancel" onClick={() => setDisconnectConfirmOpen(false)}>취소</button>
+              <button className="modal-btn cancel" onClick={() => setDisconnectConfirmOpen(false)}>Cancel</button>
               <button className="modal-btn primary" style={{ background: '#f38ba8' }} onClick={() => {
                 setDisconnectConfirmOpen(false);
                 setIsRemoteWorkspace(false);
@@ -2507,19 +2519,19 @@ function App() {
                 setIsTerminalOpen(false);
                 window.dispatchEvent(new Event('terminal-close-all'));
                 window.electron.ssh.disconnect();
-              }}>연결 해제</button>
+              }}>Disconnect</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 인앱 알림 모달 */}
+      {/* In-app alert modal */}
       {alertMessage && (
         <div className="modal-overlay" onClick={() => setAlertMessage(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
             <p style={{ margin: '0 0 16px 0', lineHeight: '1.5' }}>{alertMessage}</p>
             <div className="modal-actions" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button className="modal-btn primary" onClick={() => setAlertMessage(null)}>확인</button>
+              <button className="modal-btn primary" onClick={() => setAlertMessage(null)}>OK</button>
             </div>
           </div>
         </div>

@@ -246,6 +246,10 @@
   border: 1px solid var(--border-color);
   padding: 4px 12px;
   border-radius: 20px;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .binary-file-message {

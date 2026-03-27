@@ -667,7 +667,7 @@ function CodeEditor({
                 <button
                   className="tab-close"
                   onClick={(e) => handleTabClose(e, index)}
-                  title="닫기"
+                  title="Close"
                 >
                   ✕
                 </button>
@@ -811,8 +811,14 @@ function CodeEditor({
                   <div className="binary-warning-icon">
                     {getIconForFile(activeFile!.path, 48)}
                   </div>
-                  <div className="binary-warning-ext">
-                    .{activeFile!.path.split('.').pop()?.toUpperCase()}
+                  <div className="binary-warning-ext" title={activeFile!.path}>
+                    {(() => {
+                      const name = activeFile!.path.split(/[/\\]/).pop() || '';
+                      if (name.includes('.')) {
+                        return '.' + name.split('.').pop()?.toUpperCase();
+                      }
+                      return name.toUpperCase() || 'BINARY';
+                    })()}
                   </div>
                   <p className="binary-file-message">
                     This file is binary or uses an unsupported encoding.<br />

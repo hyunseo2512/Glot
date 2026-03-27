@@ -56,12 +56,10 @@ function SearchPanel({ workspaceDir, onFileOpen }: SearchPanelProps) {
         return (
             <div className="search-panel empty">
                 <SearchIcon size={48} />
-                <p>폴더를 열어주세요.</p>
+                <p>Please open a folder.</p>
             </div>
         );
     }
-
-    const projectName = workspaceDir ? workspaceDir.split('/').pop() : 'Search';
 
     return (
         <div className="search-panel">

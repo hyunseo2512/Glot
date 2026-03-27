@@ -17,9 +17,9 @@ const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({ files, onActi
     return (
         <div className="modal-overlay">
             <div className="modal-content" style={{ width: '400px', maxWidth: '90%' }}>
-                <h3 style={{ marginTop: 0, color: 'var(--text-primary)' }}>저장하지 않은 변경사항</h3>
+                <h3 style={{ marginTop: 0, color: 'var(--text-primary)' }}>Unsaved Changes</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '10px' }}>
-                    다음 파일들에 변경사항이 있습니다. 저장하시겠습니까?
+                    There are unsaved changes in the following files. Do you want to save them?
                 </p>
 
                 <div style={{
@@ -46,24 +46,10 @@ const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({ files, onActi
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                    <button
-                        onClick={() => onAction('save')}
-                        className="modal-btn primary"
-                    >
-                        Save
-                    </button>
-                    <button
-                        onClick={() => onAction('dontsave')}
-                        className="modal-btn delete"
-                    >
-                        Don't Save
-                    </button>
-                    <button
-                        onClick={() => onAction('cancel')}
-                        className="modal-btn cancel"
-                    >
-                        Cancel
-                    </button>
+                    {/* Reordering buttons as per the "Code Edit" snippet: Cancel, Don't Save, Save */}
+                    <button className="modal-btn cancel" onClick={() => onAction('cancel')}>Cancel</button>
+                    <button className="modal-btn delete" onClick={() => onAction('dontsave')}>Don't Save</button>
+                    <button className="modal-btn primary" onClick={() => onAction('save')} autoFocus>Save</button>
                 </div>
             </div>
         </div>
