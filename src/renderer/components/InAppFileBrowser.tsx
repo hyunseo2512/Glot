@@ -19,9 +19,9 @@ interface InAppFileBrowserProps {
 }
 
 const TITLES: Record<FileBrowserMode, string> = {
-    selectFolder: '폴더 열기',
-    selectFile: '파일 열기',
-    saveFile: '파일 저장',
+    selectFolder: 'Open Folder',
+    selectFile: 'Open File',
+    saveFile: 'Save File',
 };
 
 const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = false, initialPath, onSelect, onCancel }) => {
@@ -54,7 +54,7 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                     }
                 }
             } catch {
-                setError('디렉토리를 가져올 수 없습니다');
+                setError('Failed to get directory');
                 setLoading(false);
             }
         })();
@@ -81,10 +81,10 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                 setCurrentPath(dirPath);
                 setPathInput(dirPath);
             } else {
-                setError(result.error || '디렉토리를 읽을 수 없습니다');
+                setError(result.error || 'Failed to read directory');
             }
         } catch {
-            setError('디렉토리를 읽을 수 없습니다');
+            setError('Failed to read directory');
         }
         setLoading(false);
     }, []);
@@ -170,10 +170,10 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                 setNewFolderName('');
                 await navigateTo(currentPath); // 새로고침
             } else {
-                setError(result.error || '폴더 생성 실패');
+                setError(result.error || 'Failed to create folder');
             }
         } catch {
-            setError('폴더 생성 실패');
+            setError('Failed to create folder');
         }
     };
 
@@ -234,7 +234,7 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                         <button
                             className={`file-browser-action-btn${showHidden ? ' active' : ''}`}
                             onClick={() => setShowHidden(!showHidden)}
-                            title={showHidden ? '숨김 파일 숨기기' : '숨김 파일 보기'}
+                            title={showHidden ? 'Hide hidden files' : 'Show hidden files'}
                             style={showHidden ? { color: '#89b4fa' } : {}}
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -248,7 +248,7 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                         <button
                             className="file-browser-action-btn"
                             onClick={() => { setIsCreatingFolder(true); setNewFolderName(''); }}
-                            title="새 폴더"
+                            title="New Folder"
                         >
                             <FolderPlusIcon size={16} />
                         </button>
@@ -264,7 +264,7 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                         className="file-browser-back"
                         onClick={goUp}
                         disabled={currentPath === '/'}
-                        title="상위 폴더"
+                        title="Parent folder"
                     >
                         <ChevronUpIcon size={16} />
                     </button>
@@ -273,7 +273,7 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                         value={pathInput}
                         onChange={(e) => setPathInput(e.target.value)}
                         onKeyDown={handlePathSubmit}
-                        placeholder="경로를 입력하세요..."
+                        placeholder="Enter path..."
                     />
                 </div>
 
@@ -296,7 +296,7 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                             onClick={handleCreateFolder}
                             disabled={!newFolderName.trim()}
                         >
-                            생성
+                            Create
                         </button>
                     </div>
                 )}
@@ -304,9 +304,9 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                 {/* File list */}
                 <div className="file-browser-list" ref={listRef}>
                     {loading ? (
-                        <div className="file-browser-loading">로딩 중...</div>
+                        <div className="file-browser-loading">Loading...</div>
                     ) : entries.length === 0 ? (
-                        <div className="file-browser-empty">빈 디렉토리</div>
+                        <div className="file-browser-empty">Empty directory</div>
                     ) : (
                         entries.map((entry, index) => (
                             <div
@@ -330,7 +330,7 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                 {/* Save filename input */}
                 {mode === 'saveFile' && (
                     <div className="file-browser-save-bar">
-                        <label>파일명:</label>
+                        <label>Filename:</label>
                         <input
                             className="file-browser-save-input"
                             value={saveFileName}
@@ -338,7 +338,7 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && saveFileName.trim()) handleConfirm();
                             }}
-                            placeholder="저장할 파일명을 입력하세요..."
+                            placeholder="Enter filename to save..."
                             autoFocus
                         />
                     </div>
@@ -350,14 +350,14 @@ const InAppFileBrowser: React.FC<InAppFileBrowserProps> = ({ mode, remote = fals
                 {/* Footer */}
                 <div className="file-browser-footer">
                     <button className="file-browser-btn cancel" onClick={onCancel}>
-                        취소
+                        Cancel
                     </button>
                     <button
                         className="file-browser-btn confirm"
                         onClick={handleConfirm}
                         disabled={!canConfirm()}
                     >
-                        {mode === 'saveFile' ? '저장' : '선택'}
+                        {mode === 'saveFile' ? 'Save' : 'Select'}
                     </button>
                 </div>
             </div>

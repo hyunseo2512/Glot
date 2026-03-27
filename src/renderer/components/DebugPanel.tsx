@@ -131,9 +131,9 @@ const DebugPanel: React.FC<DebugPanelProps> = ({ workspaceDir, currentFilePath }
 
     const getStatusText = () => {
         switch (status) {
-            case 'running': return '실행 중...';
-            case 'stopped': return exitCode === 0 ? '완료' : `종료 (코드: ${exitCode})`;
-            default: return '대기';
+            case 'running': return 'Running...';
+            case 'stopped': return exitCode === 0 ? 'Done' : `Exited (code: ${exitCode})`;
+            default: return 'Idle';
         }
     };
 
@@ -162,7 +162,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({ workspaceDir, currentFilePath }
                     color: 'var(--text-secondary)',
                     fontSize: '12px'
                 }}>
-                    <p>폴더를 열어 디버깅을 시작하세요.</p>
+                    <p>Open a folder to start debugging.</p>
                 </div>
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
@@ -238,7 +238,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({ workspaceDir, currentFilePath }
 
                             <button
                                 onClick={handleClear}
-                                title="콘솔 지우기"
+                                title="Clear console"
                                 style={{
                                     padding: '6px 10px',
                                     background: 'transparent',
@@ -299,7 +299,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({ workspaceDir, currentFilePath }
                     >
                         {output.length === 0 ? (
                             <div style={{ color: 'var(--text-secondary)', opacity: 0.5, paddingTop: '20px', textAlign: 'center' }}>
-                                {status === 'idle' ? 'F5를 눌러 현재 파일을 실행하세요' : '출력 대기 중...'}
+                                {status === 'idle' ? 'Press F5 to run the current file' : 'Waiting for output...'}
                             </div>
                         ) : (
                             output.map((line, i) => (
@@ -316,7 +316,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({ workspaceDir, currentFilePath }
                                 color: exitCode === 0 ? '#4CAF50' : '#f44336',
                                 fontSize: '11px',
                             }}>
-                                프로세스가 종료되었습니다 (종료 코드: {exitCode})
+                                Process exited (exit code: {exitCode})
                             </div>
                         )}
                     </div>

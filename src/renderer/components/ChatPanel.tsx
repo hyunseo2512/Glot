@@ -66,7 +66,7 @@ function ChatPanel() {
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'system',
-        content: `오류: ${error.message}`,
+        content: `Error: ${error.message}`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -101,8 +101,8 @@ function ChatPanel() {
       <div className="messages-container">
         {messages.length === 0 ? (
           <div className="empty-state">
-            <h2>안녕하세요!</h2>
-            <p>Quark AI 비서입니다. 무엇을 도와드릴까요?</p>
+            <h2>Hello!</h2>
+            <p>I'm Quark AI assistant. How can I help you?</p>
           </div>
         ) : (
           messages.map((message) => (
@@ -117,7 +117,7 @@ function ChatPanel() {
               </div>
               <div className="message-content">{message.content}</div>
               {message.model && (
-                <div className="message-model">모델: {message.model}</div>
+                <div className="message-model">Model: {message.model}</div>
               )}
             </div>
           ))
@@ -144,12 +144,12 @@ function ChatPanel() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="메시지를 입력하세요... (Shift+Enter: 줄바꿈)"
+          placeholder="Enter message... (Shift+Enter: new line)"
           disabled={isLoading}
           rows={3}
         />
         <button className="send-button" onClick={handleSend} disabled={isLoading || !input.trim()}>
-          {isLoading ? '...' : 'Send'} 전송
+          {isLoading ? '...' : 'Send'}
         </button>
       </div>
     </div>

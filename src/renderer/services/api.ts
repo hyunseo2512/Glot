@@ -163,7 +163,7 @@ class QuarkApi {
     const { provider, apiKey, model, baseUrl } = await readProviderConfig();
 
     if (!apiKey && provider !== 'local') {
-      throw new Error(`${provider} API Key가 설정되지 않았습니다. 설정(Connection)에서 API Key를 입력해주세요.`);
+      throw new Error(`${provider} API Key is not set. Please enter the API Key in Settings (Connection).`);
     }
 
     const { url, body, headers } = buildRequest(provider, apiKey, model, baseUrl, message, systemPrompt, history);

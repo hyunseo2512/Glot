@@ -187,7 +187,7 @@ const FormattedText: React.FC<FormattedTextProps> = ({ text, onApprove, onAccept
                     fontSize: '12px',
                     color: '#C792EA',
                 }}>
-                    ✓ 승인됨
+                    ✓ Approved
                 </div>
             )
         }
@@ -257,10 +257,10 @@ const FormattedText: React.FC<FormattedTextProps> = ({ text, onApprove, onAccept
 
                                 {/* Status / Buttons */}
                                 {state === 'accepted' && (
-                                    <span style={{ color: '#C792EA', fontSize: '12px', fontWeight: 600 }}>✓ 반영됨</span>
+                                    <span style={{ color: '#C792EA', fontSize: '12px', fontWeight: 600 }}>✓ Applied</span>
                                 )}
                                 {state === 'rejected' && (
-                                    <span style={{ color: '#FF5555', fontSize: '12px', fontWeight: 600 }}>✗ 되돌림</span>
+                                    <span style={{ color: '#FF5555', fontSize: '12px', fontWeight: 600 }}>✗ Reverted</span>
                                 )}
                             </div>
 
@@ -275,7 +275,7 @@ const FormattedText: React.FC<FormattedTextProps> = ({ text, onApprove, onAccept
                                     backgroundColor: 'rgba(0,0,0,0.15)',
                                 }}>
                                     <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>
-                                        ← {meta.isNew ? '새 파일' : '파일 수정'} · 1 File Changed
+                                        ← {meta.isNew ? 'New file' : 'File modified'} · 1 File Changed
                                     </span>
                                     <div style={{ display: 'flex', gap: '8px' }}>
                                         <button
@@ -359,7 +359,7 @@ const FormattedText: React.FC<FormattedTextProps> = ({ text, onApprove, onAccept
                                 fontSize: '11px',
                                 color: 'rgba(255,255,255,0.55)',
                             }}>
-                                실행 전 승인이 필요합니다
+                                Approval required before execution
                             </span>
                             <button
                                 onClick={() => { if (onApprove) onApprove(toolName); }}
@@ -386,7 +386,7 @@ const FormattedText: React.FC<FormattedTextProps> = ({ text, onApprove, onAccept
                                     (e.target as HTMLElement).style.transform = 'translateY(0)';
                                 }}
                             >
-                                승인 및 실행
+                                Approve & Run
                             </button>
                         </div>
                     </div>

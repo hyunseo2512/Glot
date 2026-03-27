@@ -547,7 +547,7 @@ function FileExplorer({ workspaceDir, isRemote = false, onFileOpen, onCloseProje
       }
 
       if (errors.length > 0) {
-        alert(`삭제 실패 (${errors.length}건): ${errors.join(', ')}`);
+        alert(`Delete failed (${errors.length} items): ${errors.join(', ')}`);
       }
     } catch (error) {
       console.error('Failed to delete item:', error);
@@ -664,7 +664,7 @@ function FileExplorer({ workspaceDir, isRemote = false, onFileOpen, onCloseProje
   <button
     className="action-btn"
     onClick={() => refreshDeep(workspaceDir!)}
-    title="새로고침 (전체)"
+    title="Refresh (all)"
   >
     <RotateCcwIcon size={14} />
   </button>
@@ -1009,7 +1009,7 @@ function FileExplorer({ workspaceDir, isRemote = false, onFileOpen, onCloseProje
         setSelectedPaths(new Set([newPath]));
         setLastSelectedPath(newPath);
       } else {
-        alert(`이름 변경 실패: ${result.error}`);
+        alert(`Rename failed: ${result.error}`);
       }
     } catch (error) {
       console.error('Failed to rename:', error);
@@ -1067,7 +1067,7 @@ function FileExplorer({ workspaceDir, isRemote = false, onFileOpen, onCloseProje
         setSelectedPaths(new Set([newPath]));
         setLastSelectedPath(newPath);
       } else {
-        alert(`이동 실패: ${result.error}`);
+        alert(`Move failed: ${result.error}`);
       }
     } catch (error) {
       console.error('Failed to move item:', error);
@@ -1097,7 +1097,7 @@ function FileExplorer({ workspaceDir, isRemote = false, onFileOpen, onCloseProje
         setSelectedPaths(new Set([newPath]));
         setLastSelectedPath(newPath);
       } else {
-        alert(`이동 실패: ${result.error}`);
+        alert(`Move failed: ${result.error}`);
       }
     } catch (error) {
       console.error('Failed to move item to root:', error);
@@ -1212,11 +1212,11 @@ function FileExplorer({ workspaceDir, isRemote = false, onFileOpen, onCloseProje
       <div className="explorer-content">
         {!workspaceDir ? (
           <div className="empty-workspace">
-            <p>열린 폴더가 없습니다</p>
+            <p>No folder opened</p>
           </div>
         ) : isLoading ? (
           <div className="loading-state">
-            <p>로딩 중...</p>
+            <p>Loading...</p>
           </div>
         ) : (
           <>
@@ -1241,7 +1241,7 @@ function FileExplorer({ workspaceDir, isRemote = false, onFileOpen, onCloseProje
                     setIsCreating({ type: 'file', parentPath });
                     setNewItemName('');
                   }}
-                  title="새 파일"
+                  title="New File"
                 >
                   <FilePlusIcon size={16} />
                 </button>
@@ -1260,14 +1260,14 @@ function FileExplorer({ workspaceDir, isRemote = false, onFileOpen, onCloseProje
                     setIsCreating({ type: 'folder', parentPath });
                     setNewItemName('');
                   }}
-                  title="새 폴더"
+                  title="New Folder"
                 >
                   <FolderPlusIcon size={16} />
                 </button>
                 <button
                   className="action-btn"
                   onClick={() => refreshNode(workspaceDir!)}
-                  title="새로고침"
+                  title="Refresh"
                 >
                   <RotateCcwIcon size={14} />
                 </button>
@@ -1275,7 +1275,7 @@ function FileExplorer({ workspaceDir, isRemote = false, onFileOpen, onCloseProje
                   <button
                     className="action-btn"
                     onClick={onCloseProject}
-                    title="프로젝트 닫기"
+                    title="Close Project"
                     style={{ marginLeft: '4px' }}
                   >
                     <XIcon size={14} />
@@ -1340,16 +1340,16 @@ function FileExplorer({ workspaceDir, isRemote = false, onFileOpen, onCloseProje
       {deleteTarget && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>삭제 확인</h3>
-            <p>정말로 선택한 {selectedPaths.size}개의 항목을 삭제하시겠습니까?</p>
+            <h3>Confirm Delete</h3>
+            <p>Are you sure you want to delete {selectedPaths.size} selected item(s)?</p>
             <div className="modal-target-list" style={{ maxHeight: '100px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {Array.from(selectedPaths).map(path => (
                 <p key={path} className="modal-target-path" style={{ margin: 0 }}>{path.split('/').pop()}</p>
               ))}
             </div>
             <div className="modal-actions">
-              <button onClick={() => setDeleteTarget(false)} className="modal-btn cancel">취소</button>
-              <button onClick={handleDeleteConfirm} className="modal-btn delete">삭제</button>
+              <button onClick={() => setDeleteTarget(false)} className="modal-btn cancel">Cancel</button>
+              <button onClick={handleDeleteConfirm} className="modal-btn delete">Delete</button>
             </div>
           </div>
         </div>
@@ -1413,9 +1413,9 @@ function FileExplorer({ workspaceDir, isRemote = false, onFileOpen, onCloseProje
       {/* 덮어쓰기 확인 모달 */}
       <ConfirmModal
         isOpen={overwriteModal.isOpen}
-        title="파일 덮어쓰기"
-        message={`'${overwriteModal.sourceName}'이(가) 이미 존재합니다.\n덮어쓰시겠습니까?`}
-        confirmText="덮어쓰기"
+        title="Overwrite File"
+        message={`'${overwriteModal.sourceName}' already exists.\nDo you want to overwrite it?`}
+        confirmText="Overwrite"
         variant="delete"
         onConfirm={overwriteModal.onConfirm}
         onCancel={() => setOverwriteModal({ isOpen: false, sourceName: '', onConfirm: () => { } })}

@@ -82,7 +82,7 @@ function ExtensionsPanel() {
 
     // Special handling for GDB
     if (ext.id === 'gdb') {
-      alert('GDB는 시스템 패키지 매니저를 통해 설치해야 합니다.\n\nUbuntu/Debian: sudo apt install gdb\nFedora: sudo dnf install gdb\nArch: sudo pacman -S gdb');
+      alert('GDB must be installed via the system package manager.\n\nUbuntu/Debian: sudo apt install gdb\nFedora: sudo dnf install gdb\nArch: sudo pacman -S gdb');
       return;
     }
 
@@ -102,13 +102,13 @@ function ExtensionsPanel() {
           )
         );
       } else {
-        alert(`설치 실패: ${result.error}`);
+        alert(`Installation failed: ${result.error}`);
         setExtensions((prev) =>
           prev.map((e) => (e.id === id ? { ...e, installing: false } : e))
         );
       }
     } catch (error: any) {
-      alert(`설치 중 오류: ${error.message}`);
+      alert(`Error during installation: ${error.message}`);
       setExtensions((prev) =>
         prev.map((e) => (e.id === id ? { ...e, installing: false } : e))
       );
@@ -139,13 +139,13 @@ function ExtensionsPanel() {
           )
         );
       } else {
-        alert(`제거 실패: ${result.error}`);
+        alert(`Removal failed: ${result.error}`);
         setExtensions((prev) =>
           prev.map((e) => (e.id === ext.id ? { ...e, installing: false } : e))
         );
       }
     } catch (error: any) {
-      alert(`제거 중 오류: ${error.message}`);
+      alert(`Error during removal: ${error.message}`);
       setExtensions((prev) =>
         prev.map((e) => (e.id === ext.id ? { ...e, installing: false } : e))
       );
@@ -219,9 +219,9 @@ function ExtensionsPanel() {
       {/* 제거 확인 모달 */}
       <ConfirmModal
         isOpen={!!uninstallTarget}
-        title="확장 제거"
-        message={`${uninstallTarget?.name || ''}을(를) 제거하시겠습니까?`}
-        confirmText="제거"
+        title="Remove Extension"
+        message={`Are you sure you want to remove ${uninstallTarget?.name || ''}?`}
+        confirmText="Remove"
         variant="delete"
         onConfirm={doUninstall}
         onCancel={() => setUninstallTarget(null)}

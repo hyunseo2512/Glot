@@ -353,9 +353,9 @@ function AIPanel({ onClose, workspacePath, onFileSystemChange, onCloseFile }: AI
         const errorMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
           role: 'system',
-          content: `오류: ${
+          content: `Error: ${
             /ECONNREFUSED|ENOTFOUND|ETIMEDOUT|network|fetch|connect/i.test(error.message)
-              ? '서버에 연결할 수 없습니다. 설정에서 서버 URL과 API Key를 확인해주세요.'
+              ? 'Cannot connect to server. Please check the server URL and API Key in settings.'
               : error.message
           }`,
           timestamp: new Date(),
@@ -366,7 +366,7 @@ function AIPanel({ onClose, workspacePath, onFileSystemChange, onCloseFile }: AI
         setMessages((prev) => prev
           .filter(msg => !(msg.id === assistantMessageId && !msg.content?.trim()))
           .map(msg => msg.id === assistantMessageId && msg.content?.trim()
-            ? { ...msg, content: msg.content + '\n\n_(생성 중단됨)_' }
+            ? { ...msg, content: msg.content + '\n\n_(Generation stopped)_' }
             : msg
           ));
       }
@@ -539,7 +539,7 @@ function AIPanel({ onClose, workspacePath, onFileSystemChange, onCloseFile }: AI
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-              placeholder={isInitial ? "무엇이든 물어보세요..." : `${aiMode} anything (Ctrl+L), @ to mention...`}
+              placeholder={isInitial ? "Ask anything..." : `${aiMode} anything (Ctrl+L), @ to mention...`}
               disabled={isLoading}
               rows={isInitial ? 3 : 2}
               autoFocus
@@ -581,7 +581,7 @@ function AIPanel({ onClose, workspacePath, onFileSystemChange, onCloseFile }: AI
     const firstUserMessage = messages.find(msg => msg.role === 'user');
     if (firstUserMessage) {
       headerTitle = firstUserMessage.content.substring(0, 30) + (firstUserMessage.content.length > 30 ? '...' : '');
-    } else { headerTitle = "새로운 대화"; }
+    } else { headerTitle = "New Chat"; }
   }
 
   // Render History List (In-Place)
@@ -749,11 +749,11 @@ function AIPanel({ onClose, workspacePath, onFileSystemChange, onCloseFile }: AI
       {deleteSessionId && (
         <div className="modal-overlay" onClick={() => setDeleteSessionId(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3>대화 삭제</h3>
-            <p>이 대화를 삭제하시겠습니까?</p>
+            <h3>Delete Chat</h3>
+            <p>Are you sure you want to delete this chat?</p>
             <div className="modal-actions" style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px' }}>
-              <button className="modal-btn cancel" onClick={() => setDeleteSessionId(null)}>취소</button>
-              <button className="modal-btn delete" onClick={doDeleteSession}>삭제</button>
+              <button className="modal-btn cancel" onClick={() => setDeleteSessionId(null)}>Cancel</button>
+              <button className="modal-btn delete" onClick={doDeleteSession}>Delete</button>
             </div>
           </div>
         </div>
