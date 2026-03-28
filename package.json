@@ -80,17 +80,10 @@
       "public/**/*",
       "package.json"
     ],
-    "extraResources": [
-      {
-        "from": "resources/python",
-        "to": "python"
-      }
-    ],
     "linux": {
       "target": [
         "AppImage",
-        "deb",
-        "rpm"
+        "deb"
       ],
       "executableArgs": [
         "--ozone-platform=x11"
@@ -108,9 +101,6 @@
       }
     },
     "deb": {
-      "afterInstall": "build/after-install.sh"
-    },
-    "rpm": {
       "afterInstall": "build/after-install.sh"
     },
     "protocols": [
